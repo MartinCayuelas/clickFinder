@@ -1,7 +1,7 @@
 import org.apache.spark.sql.SparkSession
 
 object SimpleApp {
-  val spark = SparkSession
+  val spark: SparkSession = SparkSession
     .builder()
     .appName("Click prediction")
     .config("spark.master", "local")
