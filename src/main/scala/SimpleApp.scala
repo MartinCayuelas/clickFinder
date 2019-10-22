@@ -9,7 +9,7 @@ object SimpleApp {
   spark.sparkContext.setLogLevel("ERROR")
 
   def main(args: Array[String]) {
-    val logFile = "/home/martin/Bureau/test.md" // Should be some file on your system
+    val logFile = "README.md" // Should be some file on your system
     val logData = spark.read.textFile(logFile).cache()
     val numAs = logData.filter(line => line.contains("a")).count()
     val numBs = logData.filter(line => line.contains("b")).count()
