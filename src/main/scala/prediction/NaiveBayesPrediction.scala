@@ -1,4 +1,5 @@
 package prediction
+import cleaning.DataCleaner.spark
 import org.apache.spark.mllib.classification.{NaiveBayes, NaiveBayesModel}
 import org.apache.spark.mllib.util.MLUtils
 import org.apache.spark.sql.SparkSession
@@ -40,6 +41,7 @@ object NaiveBayesPrediction {
 
   def main(args: Array[String]): Unit = {
     createModel("data/fake_data.txt")
+    spark.stop()
   }
 
 }
