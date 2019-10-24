@@ -2,7 +2,7 @@ package cleaning
 
 import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.apache.spark.sql.functions._
-
+import org.apache.spark.sql.functions.regexp_replace
 import scala.annotation.tailrec
 
 object DataCleaner {
@@ -42,8 +42,27 @@ object DataCleaner {
     )
   }
 
-  def cleanBidFloor(dataFrame: DataFrame) : DataFrame ={
+  def cleanBidFloor(dataFrame: DataFrame) : DataFrame = {
     dataFrame.na.fill(0,Seq("bidFloor"))
+  }
+
+  def cleanNetwork(dataFrame: DataFrame) : DataFrame = {
+    val df_non_null = dataFrame.na.fill("UNKNOWN",Seq("network"))
+    df_non_null.withColumn("network", when(col("network") === "other", "UNKNOWN"))
+  }
+
+  def cleanSize(dataFrame: DataFrame) : DataFrame = {
+    dataFrame.na.fill("UNKNOWN",Seq("size"))
+  }
+
+  /**
+   * Removes the sub-categories for the interests column.
+   * @param dataFrame
+   * @return the dataFrame with the column interests cleaned
+   */
+  def cleanInterests(dataFrame: DataFrame): DataFrame = {
+    val df_without_sub = dataFrame.withColumn("interests", regexp_replace(dataFrame("interests"), "-[0-9]", ""))
+    df_without_sub.na.fill("UNKNOWN",Seq("interests"))
   }
 
   /**
@@ -52,7 +71,7 @@ object DataCleaner {
    * @return
    */
   def clean(dataFrame: DataFrame): DataFrame = {
-    val methods: Seq[DataFrame => DataFrame] =  Seq(cleanOS, cleanBidFloor)
+    val methods: Seq[DataFrame => DataFrame] =  Seq(cleanOS, cleanBidFloor, cleanInterests, cleanNetwork, cleanSize)
     @tailrec
     def applyMethods(methods: Seq[DataFrame => DataFrame], res: DataFrame): DataFrame = {
       methods match {
@@ -71,8 +90,7 @@ object DataCleaner {
     val df = selectData(readDataFrame())
     clean(df)
   }
-
-
+  
   /**
    * TEST CASE
    */
