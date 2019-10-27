@@ -1,8 +1,9 @@
 package cleaning
 
-import org.apache.spark.sql.{DataFrame, SparkSession}
+import org.apache.spark.sql.{Column, DataFrame, SparkSession}
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.functions.regexp_replace
+
 import scala.annotation.tailrec
 
 object DataCleaner {
@@ -23,7 +24,7 @@ object DataCleaner {
   }
 
   def selectData(dataFrame: DataFrame): DataFrame = {
-    val columns =  Seq("appOrSite", "bidFloor","media", "publisher", "os", "interests",  "user", "size", "type")
+    val columns =  Seq("appOrSite", "bidFloor","media", "publisher", "os", "interests", "size", "type", "network")
     dataFrame.select(columns.head, columns.tail: _*)
   }
 
@@ -90,6 +91,26 @@ object DataCleaner {
     val df = selectData(readDataFrame())
     clean(df)
   }
+
+  /**
+   * Limit the number of entries for a dataframe
+   * @param df : dataframe to limit
+   * @param size : number of entries wanted
+   * @return a new dataframe with less entries
+   */
+  def limitDataFrame(df: DataFrame, size: Int): DataFrame = df.limit(size)
+
+  /**
+   * Save a dataframe in txt file
+   * @param df : dataframe to save in a file
+   */
+  def saveDataFrameToTxt(df: DataFrame): Unit = {
+    val spark = SparkSession.builder().getOrCreate()
+    import spark.implicits._
+    df.withColumn("size", stringify($"size")).write.format("csv").save("data/data-students.csv")
+  }
+
+  def stringify(c: Column) = concat(lit("["), concat_ws(",", c), lit("]"))
   
   /**
    * TEST CASE
@@ -98,8 +119,12 @@ object DataCleaner {
     val df = selectData(readDataFrame())
     val res = clean(df)
     res.printSchema
-    res.select("os").distinct.show()
-    res.select("bidFloor").distinct.show()
+    println("DataFrame size : " + res.count())
+    //Limit the df and save in files
+    val limitedDf = limitDataFrame(res, 10)
+    saveDataFrameToTxt(limitedDf)
+    //res.select("os").distinct.show()
+    //res.select("bidFloor").distinct.show()
     spark.stop()
   }
 }
