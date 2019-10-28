@@ -43,6 +43,20 @@ object LogisticRegressionPrediction {
     // Print the coefficients and intercept for logistic regression
     println(s"Coefficients: ${lrModel.coefficients} Intercept: ${lrModel.intercept}")
 
+    // We test the model
+    val predictions: DataFrame = lrModel.transform(test)
+
+    // We use an Evaluator to compute metrics that indicate how good our model is
+    //BinaryClassificationEvaluator is use for binary classifications like our LogisticRegression
+    val evaluator: BinaryClassificationEvaluator = new BinaryClassificationEvaluator()
+      .setMetricName("areaUnderROC")
+      .setRawPredictionCol("rawPrediction")
+      .setLabelCol("label")
+
+    // We evaluate and print out metrics, like our model accuracy
+    val eval: Double = evaluator.evaluate(predictions)
+    println("Test set areaunderROC/accuracy = " + eval)
+
     lrModel
   }
 
