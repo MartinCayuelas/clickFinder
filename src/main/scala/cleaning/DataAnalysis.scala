@@ -1,5 +1,6 @@
 package cleaning
 
+import cleaning.DataCleaner.{clean, readDataFrame}
 import org.apache.spark.sql.SparkSession
 
 object DataAnalysis {
@@ -24,7 +25,8 @@ object DataAnalysis {
       .option("inferSchema", "true")
       .load("data-students.json")
 
-    val df = spark.read.json("data-students.json")
+    //val df = spark.read.json("data-students.json")
+    val df = clean(readDataFrame())
     df.createOrReplaceTempView("user")
     spark.sql("SELECT appOrSite FROM user GROUP BY appOrSite").show()
     spark.sql("SELECT bidfloor FROM user GROUP BY bidfloor").show()

@@ -5,6 +5,7 @@ import org.apache.spark.sql.functions._
 import org.apache.spark.sql.functions.regexp_replace
 import scala.annotation.tailrec
 
+
 object DataCleaner {
 
   val spark: SparkSession = SparkSession
@@ -89,17 +90,22 @@ object DataCleaner {
   def retrieveDataFrame(): DataFrame = {
     val df = selectData(readDataFrame())
     clean(df)
+
   }
   
   /**
    * TEST CASE
    */
   def main(args: Array[String]) {
+    val df = clean(readDataFrame())
+    df.write.json("result")
+    /*
     val df = selectData(readDataFrame())
     val res = clean(df)
     res.printSchema
     res.select("os").distinct.show()
     res.select("bidFloor").distinct.show()
+     */
     spark.stop()
   }
 }
