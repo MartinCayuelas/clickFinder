@@ -20,7 +20,8 @@ object LogisticRegressionPrediction {
 
     // Transform the list of indexed columns into a single vector column.
     val assembler: VectorAssembler = new VectorAssembler()
-      .setInputCols(Array("V1", "V2", "V3","V4", "V5", "V6", "V7", "V8", "V9", "V10", "V11","V12", "V13", "V14", "V15", "V16", "V17", "V18", "V19","V20", "V21", "V22", "V23", "V24"))
+      //.setInputCols(Array("V1", "V2", "V3","V4", "V5", "V6", "V7", "V8", "V9", "V10", "V11","V12", "V13", "V14", "V15", "V16", "V17", "V18", "V19","V20", "V21", "V22", "V23", "V24"))
+      .setInputCols(Array("appOrSite","bidFloor","os","label"))
       .setOutputCol("features")
 
     //Create a dataframe with 2 columns: label and features
@@ -30,7 +31,7 @@ object LogisticRegressionPrediction {
     val Array(training, test) = df3.randomSplit(Array(0.7, 0.3))
 
     val lr = new LogisticRegression()
-      .setLabelCol("Class")
+      .setLabelCol("label")
       .setFeaturesCol("features")
       .setMaxIter(10)
       .setRegParam(0.3)
@@ -42,6 +43,20 @@ object LogisticRegressionPrediction {
     // Print the coefficients and intercept for logistic regression
     println(s"Coefficients: ${lrModel.coefficients} Intercept: ${lrModel.intercept}")
 
+    // We test the model
+    val predictions: DataFrame = lrModel.transform(test)
+
+    // We use an Evaluator to compute metrics that indicate how good our model is
+    //BinaryClassificationEvaluator is use for binary classifications like our LogisticRegression
+    val evaluator: BinaryClassificationEvaluator = new BinaryClassificationEvaluator()
+      .setMetricName("areaUnderROC")
+      .setRawPredictionCol("rawPrediction")
+      .setLabelCol("label")
+
+    // We evaluate and print out metrics, like our model accuracy
+    val eval: Double = evaluator.evaluate(predictions)
+    println("Test set areaunderROC/accuracy = " + eval)
+
     lrModel
   }
 
@@ -50,7 +65,7 @@ object LogisticRegressionPrediction {
       .option("sep", ";")
       .option("inferSchema", "true")
       .option("header", "true")
-      .load("data/sonar.csv")
+      .load("data/data-student/1000.csv")
     println(df.printSchema())
     createModel(df)
     spark.stop()

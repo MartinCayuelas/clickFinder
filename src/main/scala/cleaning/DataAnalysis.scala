@@ -41,7 +41,6 @@ object DataAnalysis {
     spark.sql("SELECT publisher FROM user GROUP BY publisher").show()
     spark.sql("SELECT timestamp FROM user GROUP BY timestamp").show()
     spark.sql("SELECT type FROM user GROUP BY type").show()
-    spark.sql("SELECT user FROM user GROUP BY user").show()
     spark.sql("SELECT size FROM user GROUP BY size").show()
     spark.sql("SELECT element FROM user GROUP BY element").show()
 

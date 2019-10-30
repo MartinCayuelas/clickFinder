@@ -1,8 +1,9 @@
 package cleaning
 
-import org.apache.spark.sql.{DataFrame, SparkSession}
+import org.apache.spark.sql.{Column, DataFrame, SparkSession}
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.functions.regexp_replace
+
 import scala.annotation.tailrec
 
 
@@ -24,22 +25,34 @@ object DataCleaner {
   }
 
   def selectData(dataFrame: DataFrame): DataFrame = {
-    val columns =  Seq("appOrSite", "bidFloor","media", "publisher", "os", "interests",  "user", "size", "type")
+    //val columns =  Seq("appOrSite", "bidFloor","media", "publisher", "os", "interests", "size", "type", "network")
+    val columns =  Seq("appOrSite", "bidFloor", "os", "label")
     dataFrame.select(columns.head, columns.tail: _*)
   }
 
+  def cleanLabel(dataFrame: DataFrame): DataFrame = {
+    dataFrame.withColumn("label",dataFrame("label").cast("Int"))
+  }
 
   def cleanOS(dataFrame: DataFrame) : DataFrame = {
     val df_non_null = dataFrame.na.fill("UNKNOWN",Seq("os"))
-    df_non_null.withColumn("os", when(col("os") === "ios", "iOS")
-      .otherwise(when(col("os") === "Android", "android")
-        .otherwise(when(col("os") === "Unknown", "UNKNOWN")
-          .otherwise(when(col("os") === "other", "UNKNOWN")
-            .otherwise(when(col("os") === "Windows Mobile OS", "WindowsPhone")
-              .otherwise(when(col("os") ===  "WindowsMobile", "WindowsPhone")
-                .otherwise(when(col("os") ===  "windows", "WindowsPhone")
-                  .otherwise(when(col("os") === "Windows Phone OS"  , "WindowsPhone")
-                    .otherwise(col("os")))))))))
+    df_non_null.withColumn("os", when(col("os") === "ios" || col("os") === "iOS", "3")
+      .otherwise(when(col("os") === "Android" || col("os") === "android", "2")
+        .otherwise(when(col("os") === "Unknown" || col("os") === "UNKNOWN", "0")
+          .otherwise(when(col("os") === "other", "1")
+            .otherwise(when(col("os") === "Windows Mobile OS" || col("os") === "WindowsMobile" || col("os") === "windows" || col("os") === "Windows Phone OS" || col("os") === "WindowsPhone", "4")
+              .otherwise(when(col("os") === "blackberry", "5")
+                .otherwise(when(col("os") === "Rim", "6")
+                  .otherwise(when(col("os") === "WebOS", "7")
+                    .otherwise(when(col("os") === "Symbian", "8")
+                      .otherwise(when(col("os") === "Bada", "9")
+                    .otherwise(col("os")))))))))))
+    )
+  }
+
+  def cleanAppOrSite(dataFrame: DataFrame): DataFrame = {
+    dataFrame.withColumn("appOrSite", when(col("appOrSite") === "app", "1")
+      .otherwise(when(col("appOrSite") === "site", "2"))
     )
   }
 
@@ -72,7 +85,8 @@ object DataCleaner {
    * @return
    */
   def clean(dataFrame: DataFrame): DataFrame = {
-    val methods: Seq[DataFrame => DataFrame] =  Seq(cleanOS, cleanBidFloor, cleanInterests, cleanNetwork, cleanSize)
+    //val methods: Seq[DataFrame => DataFrame] =  Seq(cleanOS, cleanBidFloor, cleanInterests, cleanNetwork, cleanSize)
+    val methods: Seq[DataFrame => DataFrame] =  Seq(cleanOS, cleanBidFloor, cleanAppOrSite, cleanLabel)
     @tailrec
     def applyMethods(methods: Seq[DataFrame => DataFrame], res: DataFrame): DataFrame = {
       methods match {
@@ -92,6 +106,31 @@ object DataCleaner {
     clean(df)
 
   }
+
+  /**
+   * Limit the number of entries for a dataframe
+   * @param df : dataframe to limit
+   * @param size : number of entries wanted
+   * @return a new dataframe with less entries
+   */
+  def limitDataFrame(df: DataFrame, size: Int): DataFrame = df.limit(size)
+
+  /**
+   * Save a dataframe in txt file
+   * @param df : dataframe to save in a file
+   */
+  def saveDataFrameToCsv(df: DataFrame): Unit = {
+    val spark = SparkSession.builder().getOrCreate()
+    import spark.implicits._
+    df.coalesce(1)
+      //.withColumn("size", stringify($"size"))
+      .write.format("com.databricks.spark.csv")
+      .option("sep", ";")
+      .option("header", "true")
+      .save("data/data-student")
+  }
+
+  def stringify(c: Column) = concat(lit("["), concat_ws(",", c), lit("]"))
   
   /**
    * TEST CASE
@@ -103,9 +142,18 @@ object DataCleaner {
     val df = selectData(readDataFrame())
     val res = clean(df)
     res.printSchema
+<<<<<<< HEAD
     res.select("os").distinct.show()
     res.select("bidFloor").distinct.show()
      */
+=======
+    println("DataFrame size : " + res.count())
+    //Limit the df and save in files
+    val limitedDf = limitDataFrame(res, 1000)
+    saveDataFrameToCsv(limitedDf)
+    //res.select("os").distinct.show()
+    //res.select("bidFloor").distinct.show()
+>>>>>>> c313032fc03445dae5c04e9afaa671c5f864bb02
     spark.stop()
   }
 }
