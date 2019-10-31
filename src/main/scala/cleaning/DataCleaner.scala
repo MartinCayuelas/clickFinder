@@ -25,8 +25,7 @@ object DataCleaner {
   }
 
   def selectData(dataFrame: DataFrame): DataFrame = {
-    val columns =  Seq("appOrSite", "bidFloor","timestamp", "os", "interests", "size", "type")
-    //val columns =  Seq("appOrSite", "bidFloor", "os", "label", "interests")
+    val columns =  Seq("appOrSite", "bidFloor","timestamp", "os", "size", "label","type")
     dataFrame.select(columns.head, columns.tail: _*)
   }
 
@@ -40,11 +39,11 @@ object DataCleaner {
    * @return
    */
   def cleanOS(dataFrame: DataFrame) : DataFrame = {
-    val df_non_null = dataFrame.na.fill("0",Seq("os"))
-    df_non_null.withColumn("os", when(col("os").contains("android"), "1")
-      .when(col("os").contains("ios"), "2")
-        .when(col("os").contains("windows"), "3")
-          .otherwise("0")
+    val df_non_null = dataFrame.na.fill(0,Seq("os"))
+    df_non_null.withColumn("os", when(col("os").contains("android"), 1)
+      .when(col("os").contains("ios"), 2)
+        .when(col("os").contains("windows"), 3)
+          .otherwise(0)
     )
   }
 
@@ -55,9 +54,9 @@ object DataCleaner {
    */
   def cleanAppOrSite(dataFrame: DataFrame): DataFrame = {
     dataFrame.withColumn("appOrSite",
-      when(col("appOrSite") === "app", "1")
-      .when(col("appOrSite") === "site", "2")
-        .otherwise("0")
+      when(col("appOrSite") === "app", 1)
+      .when(col("appOrSite") === "site", 2)
+        .otherwise(0)
     )
   }
 
@@ -87,9 +86,13 @@ object DataCleaner {
    * @return
    */
   def cleanType(dataFrame: DataFrame) : DataFrame = {
-    val cleanDF = dataFrame.withColumn("type", when(col("type") === "CLICK", "4")
-    .otherwise(col("type")))
-    cleanDF.na.fill("5" ,Seq("type"))
+    val cleanDF = dataFrame.withColumn("type",
+      when(col("type") === "CLICK", 4)
+        .when(col("type") === "0", 0)
+        .when(col("type") === "1", 1)
+        .when(col("type") === "2", 2)
+        .when(col("type") === "3", 3))
+    cleanDF.na.fill(5 ,Seq("type"))
   }
 
 
@@ -109,10 +112,10 @@ object DataCleaner {
    */
   def cleanSize(dataFrame: DataFrame) : DataFrame = {
     dataFrame.withColumn("size",
-      when(col("size").isNotNull && col("size")(0).equals(col("size")(1)), "1")
-        .when(col("size").isNotNull && col("size")(0) > (col("size")(1)), "2")
-        .when(col("size").isNotNull && col("size")(0) < (col("size")(1)), "3")
-        .otherwise("0")
+      when(col("size").isNotNull && col("size")(0).equals(col("size")(1)), 1)
+        .when(col("size").isNotNull && col("size")(0) > col("size")(1), 2)
+        .when(col("size").isNotNull && col("size")(0) < col("size")(1), 3)
+        .otherwise(0)
     )
   }
 
@@ -145,7 +148,7 @@ object DataCleaner {
    * @return
    */
   def clean(dataFrame: DataFrame): DataFrame = {
-    val methods: Seq[DataFrame => DataFrame] =  Seq(cleanOS, cleanBidFloor, cleanAppOrSite, cleanLabel, cleanInterests, cleanTimestamp, cleanSize, cleanType)
+    val methods: Seq[DataFrame => DataFrame] =  Seq(cleanOS, cleanBidFloor, cleanAppOrSite, cleanLabel, cleanTimestamp, cleanSize, cleanType)
     @tailrec
     def applyMethods(methods: Seq[DataFrame => DataFrame], res: DataFrame): DataFrame = {
       methods match {
@@ -178,7 +181,7 @@ object DataCleaner {
    * Save a dataframe in txt file
    * @param df : dataframe to save in a file
    */
-  def saveDataFrameToCsv(df: DataFrame): Unit = {
+  def saveDataFrameToCsv(df: DataFrame, name: String): Unit = {
     val spark = SparkSession.builder().getOrCreate()
     import spark.implicits._
     df.coalesce(1)
@@ -186,7 +189,7 @@ object DataCleaner {
       .write.format("com.databricks.spark.csv")
       .option("sep", ";")
       .option("header", "true")
-      .save("data/data-student")
+      .save(s"data/$name")
   }
 
   def stringify(c: Column) = concat(lit("["), concat_ws(",", c), lit("]"))
@@ -207,7 +210,7 @@ object DataCleaner {
     println("DataFrame size : " + df.count())
     //Limit the df and save in files
     val limitedDf = limitDataFrame(df, 100)
-    saveDataFrameToCsv(limitedDf)
+    //saveDataFrameToCsv(limitedDf)
     //res.select("os").distinct.show()
     //res.select("bidFloor").distinct.show()
     spark.stop()
