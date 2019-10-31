@@ -25,8 +25,8 @@ object DataCleaner {
   }
 
   def selectData(dataFrame: DataFrame): DataFrame = {
-    //val columns =  Seq("appOrSite", "bidFloor","media", "publisher", "os", "interests", "size", "type", "network")
-    val columns =  Seq("appOrSite", "bidFloor", "os", "label", "interests")
+    val columns =  Seq("appOrSite", "bidFloor","timestamp", "os", "interests", "size", "type")
+    //val columns =  Seq("appOrSite", "bidFloor", "os", "label", "interests")
     dataFrame.select(columns.head, columns.tail: _*)
   }
 
@@ -48,27 +48,77 @@ object DataCleaner {
     )
   }
 
+  /**
+   * 1 for App, 2 for Site, 0 otherwise
+   * @param dataFrame
+   * @return
+   */
   def cleanAppOrSite(dataFrame: DataFrame): DataFrame = {
-    dataFrame.withColumn("appOrSite", when(col("appOrSite") === "app", "1")
-      .otherwise(when(col("appOrSite") === "site", "2"))
+    dataFrame.withColumn("appOrSite",
+      when(col("appOrSite") === "app", "1")
+      .when(col("appOrSite") === "site", "2")
+        .otherwise("0")
     )
   }
 
+  /**
+   * Replace null values with the average bidfloor
+   * @param dataFrame
+   * @return
+   */
   def cleanBidFloor(dataFrame: DataFrame) : DataFrame = {
-    dataFrame.na.fill(0,Seq("bidFloor"))
+    val averageBidFloor = dataFrame.select(mean(dataFrame("bidfloor"))).first()(0).asInstanceOf[Double]
+    dataFrame.na.fill(averageBidFloor,Seq("bidFloor"))
   }
+
+  /**
+   * Replace null values with the average timestamp
+   * @param dataFrame
+   * @return
+   */
+  def cleanTimestamp(dataFrame: DataFrame) : DataFrame = {
+    val averageTimestamp = dataFrame.select(mean(dataFrame("timestamp"))).first()(0).asInstanceOf[Double]
+    dataFrame.na.fill(averageTimestamp,Seq("timestamp"))
+  }
+
+  /**
+   * Replace null values 5 and CLICK with 4
+   * @param dataFrame
+   * @return
+   */
+  def cleanType(dataFrame: DataFrame) : DataFrame = {
+    val cleanDF = dataFrame.withColumn("type", when(col("type") === "CLICK", "4")
+    .otherwise(col("type")))
+    cleanDF.na.fill("5" ,Seq("type"))
+  }
+
 
   def cleanNetwork(dataFrame: DataFrame) : DataFrame = {
     val df_non_null = dataFrame.na.fill("UNKNOWN",Seq("network"))
     df_non_null.withColumn("network", when(col("network") === "other", "UNKNOWN"))
   }
 
+  /**
+   * Replace the size with the Screen Type:
+   * 0 if null
+   * 1 for a square screen (L == H)
+   * 2 for horizontal (L > H)
+   * 3 for vertical (L < H)
+   * @param dataFrame
+   * @return
+   */
   def cleanSize(dataFrame: DataFrame) : DataFrame = {
-    dataFrame.na.fill("UNKNOWN",Seq("size"))
+    dataFrame.withColumn("size",
+      when(col("size").isNotNull && col("size")(0).equals(col("size")(1)), "1")
+        .when(col("size").isNotNull && col("size")(0) > (col("size")(1)), "2")
+        .when(col("size").isNotNull && col("size")(0) < (col("size")(1)), "3")
+        .otherwise("0")
+    )
   }
 
   /**
    * Removes the sub-categories for the interests column.
+   * TODO - UNKNOWN ?
    * @param dataFrame
    * @return the dataFrame with the column interests cleaned
    */
@@ -95,8 +145,7 @@ object DataCleaner {
    * @return
    */
   def clean(dataFrame: DataFrame): DataFrame = {
-    //val methods: Seq[DataFrame => DataFrame] =  Seq(cleanOS, cleanBidFloor, cleanInterests, cleanNetwork, cleanSize)
-    val methods: Seq[DataFrame => DataFrame] =  Seq(cleanOS, cleanBidFloor, cleanAppOrSite, cleanLabel, cleanInterests)
+    val methods: Seq[DataFrame => DataFrame] =  Seq(cleanOS, cleanBidFloor, cleanAppOrSite, cleanLabel, cleanInterests, cleanTimestamp, cleanSize, cleanType)
     @tailrec
     def applyMethods(methods: Seq[DataFrame => DataFrame], res: DataFrame): DataFrame = {
       methods match {
