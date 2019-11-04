@@ -1,13 +1,33 @@
-import cleaning.DataAnalysis.spark
 import cleaning.DataCleaner
 import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.{DataFrame}
 import org.apache.spark.ml.classification.{LogisticRegression, RandomForestClassifier}
 import org.apache.spark.ml.evaluation.BinaryClassificationEvaluator
 import org.apache.spark.ml.feature.VectorAssembler
-import org.apache.spark.sql.functions.{col, when}
+import org.apache.spark.sql.functions._
 
 
 object Predicter {
+
+  def balanceDataset(dataset: DataFrame): DataFrame = {
+
+    // Re-balancing (weighting) of records to be used in the logistic loss objective function
+    val numNegatives = dataset.filter(dataset("label") === 0).count
+    val datasetSize = dataset.count
+    val balancingRatio = (datasetSize - numNegatives).toDouble / datasetSize
+
+    val calculateWeights = udf { d: Double =>
+      if (d == 0.0) {
+        1 * balancingRatio
+      }
+      else {
+        1 * (1.0 - balancingRatio)
+      }
+    }
+
+    val weightedDataset = dataset.withColumn("classWeightCol", calculateWeights(dataset("label")))
+    weightedDataset
+  }
 
   def main(args: Array[String]) {
     val spark = SparkSession
@@ -18,25 +38,28 @@ object Predicter {
     import spark.implicits._
 
     val raw_data = DataCleaner.retrieveDataFrame()
-
-    val raw_data_pos = raw_data.filter(col("label") === 1)
-    val raw_data_neg = raw_data.filter(col("label") === 0)
-
     val featuresCols = Array("appOrSite", "timestamp", "size", "os", "bidFloor", "type")
     val assembler = new VectorAssembler()
       .setInputCols(featuresCols)
       .setOutputCol("features")
 
-    val data_pos = assembler.transform(raw_data_pos).select( $"features", $"label")
-    val data_neg = assembler.transform(raw_data_neg).select( $"features", $"label")
+    val data = assembler.transform(raw_data).select( $"features", $"label")
+    val Array(trainingData, testData) = data.randomSplit(Array(0.8, 0.2))
 
-    val Array(trainingDataPos, testDataPos) = data_pos.randomSplit(Array(0.8, 0.2))
-    val Array(trainingDataNeg, testDataNeg) = data_neg.randomSplit(Array(0.8, 0.2))
+    /*
+    val temp = trainingData.groupBy("label").count()
+    val new_train = trainingData.join(temp, "label")
+    trainingData)
+    val num_labels = trainingData.select(countDistinct(trainingData.score)).first()(0)
+    train1 = new_train.withColumn("weight",(new_train.count()/(num_labels * new_train("count"))))
+    */
 
-    val trainingData = trainingDataPos.union(trainingDataNeg)
-    val testData = testDataPos.union(testDataNeg)
-
-    //TODO - Algorithms predict only 200k lines?
+    val balanced_dataset = balanceDataset(trainingData)
+    val lr = new LogisticRegression()
+      .setWeightCol("classWeightCol")
+      .setLabelCol("label")
+      .setFeaturesCol("features")
+      .setFamily("binomial")
 
     val logisticRegression = new LogisticRegression()
       .setMaxIter(10)
@@ -49,10 +72,12 @@ object Predicter {
     // Fit the model for Logistic Regression
     val logisticRegressionModel = logisticRegression.fit(trainingData)
     val randomForestModel = randomForest.fit(trainingData)
+    val balancedLR = lr.fit(balanced_dataset)
 
     // Get predictions
     val predictions = logisticRegressionModel.transform(testData)
     val predictionsForest = randomForestModel.transform(testData)
+    val predictionsBalancedLR = balancedLR.transform(testData)
 
     //Evaluator for the classification
     val evaluator = new BinaryClassificationEvaluator()
@@ -61,12 +86,15 @@ object Predicter {
       .setMetricName("areaUnderROC")
 
     val accuracy = evaluator.evaluate(predictions)
+    val accuracyBLR = evaluator.evaluate(predictionsBalancedLR)
 
     println("accuracy : " + accuracy)
+    println("accuracy (balanced): " + accuracyBLR)
     println(s"Coefficients: ${logisticRegressionModel.coefficients} Intercept: ${logisticRegressionModel.intercept}")
 
     DataCleaner.saveDataFrameToCsv(predictions.select($"label", $"prediction"), "predictionLR")
     DataCleaner.saveDataFrameToCsv(predictionsForest.select($"label", $"prediction"), "predictionRF")
+    DataCleaner.saveDataFrameToCsv(predictionsBalancedLR.select($"label", $"prediction"), "predictionBLR")
 
     spark.stop()
   }
