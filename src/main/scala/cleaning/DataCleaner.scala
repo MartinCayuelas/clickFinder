@@ -25,7 +25,7 @@ object DataCleaner {
   }
 
   def selectData(dataFrame: DataFrame): DataFrame = {
-    val columns =  Seq("appOrSite", "bidFloor","timestamp", "os", "size", "label","type")
+    val columns =  Seq("appOrSite", "bidFloor","timestamp", "os", "size", "label","type","interests")
     dataFrame.select(columns.head, columns.tail: _*)
   }
 
@@ -127,10 +127,17 @@ object DataCleaner {
    */
   def cleanInterests(dataFrame: DataFrame): DataFrame = {
     val res = dataFrame.withColumn("interests", regexp_replace(dataFrame("interests"), "IAB|-[0-9]*", ""))
-    //val res2 = res.withColumn("interests", regexp_replace(dataFrame("interests"), ",[a-zA-Z]*,", ""))
-
-    res.na.fill("UNKNOWN",Seq("interests"))
+    var df_non_null = res.na.fill("UNKNOWN",Seq("interests"))
+    val sqlfunc = (interestNumer: String) => col("interests").contains(interestNumer).cast("Int")
+    for (i <- 1 to 26) df_non_null = df_non_null.withColumn("IAB"+i.toString, sqlfunc(i.toString))
+    //val res2 = df_non_null.withColumn("IAB4", sqlfunc("4"))
+    val res2 = df_non_null
+    res2.printSchema()
+    res2.show(10)
+    res2
   }
+
+
 
   /*def cleanInterests(dataFrame: DataFrame): DataFrame = {
     val df_without_sub = dataFrame.withColumn("interests", regexp_replace(dataFrame("interests"), "IAB", ""))
@@ -148,7 +155,7 @@ object DataCleaner {
    * @return
    */
   def clean(dataFrame: DataFrame): DataFrame = {
-    val methods: Seq[DataFrame => DataFrame] =  Seq(cleanOS, cleanBidFloor, cleanAppOrSite, cleanLabel, cleanTimestamp, cleanSize, cleanType)
+    val methods: Seq[DataFrame => DataFrame] =  Seq(cleanOS, cleanBidFloor, cleanAppOrSite, cleanLabel, cleanTimestamp, cleanSize, cleanType, cleanInterests)
     @tailrec
     def applyMethods(methods: Seq[DataFrame => DataFrame], res: DataFrame): DataFrame = {
       methods match {
@@ -199,7 +206,7 @@ object DataCleaner {
    */
   def main(args: Array[String]) {
     val df = clean(readDataFrame())
-    df.write.json("result")
+    //df.write.json("result")
     /*
     val df = selectData(readDataFrame())
     val res = clean(df)
