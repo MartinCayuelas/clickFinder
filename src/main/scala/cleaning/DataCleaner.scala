@@ -5,6 +5,7 @@ import org.apache.spark.sql.functions._
 import org.apache.spark.sql.functions.regexp_replace
 
 import scala.annotation.tailrec
+import scala.util.matching.Regex
 
 
 object DataCleaner {
@@ -128,8 +129,14 @@ object DataCleaner {
   def cleanInterests(dataFrame: DataFrame): DataFrame = {
     val res = dataFrame.withColumn("interests", regexp_replace(dataFrame("interests"), "IAB|-[0-9]*", ""))
     var df_non_null = res.na.fill("UNKNOWN",Seq("interests"))
-    val sqlfunc = (interestNumer: String) => col("interests").contains(interestNumer).cast("Int")
-    for (i <- 1 to 26) df_non_null = df_non_null.withColumn("IAB"+i.toString, sqlfunc(i.toString))
+    val sqlfunc = (interestNumer: String) => {
+      val expression = new Regex("(\\A|[^0-9])4([^0-9]|\\z)")
+      expression.findAllIn("4").length match {
+        case 0 => col("interests").contains("vvvv").cast("Int")
+        case _ => col("interests").contains(interestNumer).cast("Int")
+      }
+    }
+    for (i <- 1 to 2) df_non_null = df_non_null.withColumn("IAB"+i.toString, sqlfunc(i.toString))
     //val res2 = df_non_null.withColumn("IAB4", sqlfunc("4"))
     val res2 = df_non_null
     res2.printSchema()
