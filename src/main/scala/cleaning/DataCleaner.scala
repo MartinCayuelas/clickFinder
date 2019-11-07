@@ -179,7 +179,7 @@ object DataCleaner {
         case _ => col("interests").contains(interestNumer).cast("Int")
       }
     }
-    for (i <- 1 to 2) df_non_null = df_non_null.withColumn("IAB" + i.toString, sqlfunc(i.toString))
+    for (i <- 1 to 26) df_non_null = df_non_null.withColumn("IAB" + i.toString, sqlfunc(i.toString))
     val res2 = df_non_null
     res2.printSchema()
     res2.show(10)
