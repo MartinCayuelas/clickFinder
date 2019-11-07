@@ -30,6 +30,9 @@ object DataAnalysis {
     df.printSchema()
     df.createOrReplaceTempView("user")
 
+    spark.sql("SELECT exchange FROM user GROUP BY exchange").show()
+    spark.sql("SELECT publisher FROM user GROUP BY publisher").show()
+    spark.sql("SELECT media FROM user GROUP BY media").show()
     spark.sql("SELECT appOrSite FROM user GROUP BY appOrSite").show()
     spark.sql("SELECT bidfloor FROM user GROUP BY bidfloor").show()
     spark.sql("SELECT timestamp FROM user GROUP BY timestamp").show()
