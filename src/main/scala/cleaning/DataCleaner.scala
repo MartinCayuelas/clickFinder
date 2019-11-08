@@ -170,20 +170,18 @@ object DataCleaner {
    * @return the dataFrame with the column interests cleaned
    */
   def cleanInterests(dataFrame: DataFrame): DataFrame = {
-    val res = dataFrame.withColumn("interests", regexp_replace(dataFrame("interests"), "IAB|-[0-9]*", ""))
-    var df_non_null = res.na.fill("UNKNOWN", Seq("interests"))
-    val sqlfunc = (interestNumer: String) => {
-      val expression = new Regex("(\\A|[^0-9])4([^0-9]|\\z)")
-      expression.findAllIn("4").length match {
-        case 0 => col("interests").contains("vvvv").cast("Int")
-        case _ => col("interests").contains(interestNumer).cast("Int")
-      }
-    }
-    for (i <- 1 to 26) df_non_null = df_non_null.withColumn("IAB" + i.toString, sqlfunc(i.toString))
-    val res2 = df_non_null
-    res2.printSchema()
-    res2.show(10)
-    res2
+    import spark.implicits._
+    //Delete "IAB" and sub-categories of interests
+    val dfWithoutIab = dataFrame.withColumn("interests", regexp_replace(dataFrame("interests"), "IAB|-[0-9]*", ""))
+    //Fill N/A values
+    val df_non_null = dfWithoutIab.na.fill("UNKNOWN", Seq("interests"))
+    //Transform interests to Array of interest number
+    var dfWithArray = df_non_null.withColumn("interests", split($"interests", ",").cast("array<String>"))
+    //Create a new column for each interest with 0 (not interested) or 1 (interested)
+    for (i <- 1 to 26) dfWithArray = dfWithArray.withColumn("IAB" + i.toString, array_contains(col("interests"), i.toString).cast("Int"))
+    dfWithArray.printSchema()
+    dfWithArray.show(10)
+    dfWithArray
   }
 
   /**
