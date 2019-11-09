@@ -235,7 +235,7 @@ object DataCleaner {
       .mode ("overwrite")
       .format("com.databricks.spark.csv")
       .option("header", "true")
-      .save(s"data/prediction/$name.csv")
+      .save(s"data/predictions/$name")
   }
 
   def stringify(c: Column): Column = concat(lit("["), concat_ws(",", c), lit("]"))
