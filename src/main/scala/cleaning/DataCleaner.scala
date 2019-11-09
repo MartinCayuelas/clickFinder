@@ -1,11 +1,9 @@
 package cleaning
 
+import org.apache.spark.sql.functions.{regexp_replace, _}
 import org.apache.spark.sql.{Column, DataFrame, SparkSession}
-import org.apache.spark.sql.functions._
-import org.apache.spark.sql.functions.regexp_replace
 
 import scala.annotation.tailrec
-import scala.util.matching.Regex
 
 
 object DataCleaner {
@@ -17,11 +15,11 @@ object DataCleaner {
     .getOrCreate()
   spark.sparkContext.setLogLevel("ERROR")
 
-  def readDataFrame(): DataFrame = {
+  def readDataFrame(pathToFile: String ="data-students.json"): DataFrame = {
     val data = spark.read.format("json")
       .option("header", "true")
       .option("inferSchema", "true")
-      .load("data-students.json")
+      .load(pathToFile)
     data
   }
 
@@ -180,7 +178,7 @@ object DataCleaner {
     //Create a new column for each interest with 0 (not interested) or 1 (interested)
     for (i <- 1 to 26) dfWithArray = dfWithArray.withColumn("IAB" + i.toString, array_contains(col("interests"), i.toString).cast("Int"))
     dfWithArray.printSchema()
-    dfWithArray.show(10)
+  //  dfWithArray.show(10)
     dfWithArray
   }
 
@@ -209,8 +207,8 @@ object DataCleaner {
    *
    * @return The dataFrame with clean entries
    */
-  def retrieveDataFrame(): DataFrame = {
-    val df = selectData(readDataFrame())
+  def retrieveDataFrame(pathToFile: String ="data-students.json"): DataFrame = {
+    val df = selectData(readDataFrame(pathToFile))
     clean(df)
 
   }
@@ -230,17 +228,15 @@ object DataCleaner {
    * @param df : dataframe to save in a file
    */
   def saveDataFrameToCsv(df: DataFrame, name: String): Unit = {
-    val spark = SparkSession.builder().getOrCreate()
-    import spark.implicits._
-    df.coalesce(1)
-      //.withColumn("size", stringify($"size"))
-      .write.format("com.databricks.spark.csv")
-      .option("sep", ";")
+    df.repartition(1).coalesce(1)
+      .write
+      .mode ("overwrite")
+      .format("com.databricks.spark.csv")
       .option("header", "true")
-      .save(s"data/$name")
+      .save(s"data/prediction/$name.csv")
   }
 
-  def stringify(c: Column) = concat(lit("["), concat_ws(",", c), lit("]"))
+  def stringify(c: Column): Column = concat(lit("["), concat_ws(",", c), lit("]"))
 
   /**
    * TEST CASE
