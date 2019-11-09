@@ -1,11 +1,11 @@
 package cleaning
 
+import java.nio.file.Paths
+
+import org.apache.spark.sql.functions.{regexp_replace, _}
 import org.apache.spark.sql.{Column, DataFrame, SparkSession}
-import org.apache.spark.sql.functions._
-import org.apache.spark.sql.functions.regexp_replace
 
 import scala.annotation.tailrec
-import scala.util.matching.Regex
 
 
 object DataCleaner {
@@ -17,11 +17,11 @@ object DataCleaner {
     .getOrCreate()
   spark.sparkContext.setLogLevel("ERROR")
 
-  def readDataFrame(): DataFrame = {
+  def readDataFrame(pathToFile: String): DataFrame = {
     val data = spark.read.format("json")
       .option("header", "true")
       .option("inferSchema", "true")
-      .load("data-students.json")
+      .load(Paths.get(pathToFile).toAbsolutePath.toString)
     data
   }
 
@@ -170,20 +170,18 @@ object DataCleaner {
    * @return the dataFrame with the column interests cleaned
    */
   def cleanInterests(dataFrame: DataFrame): DataFrame = {
-    val res = dataFrame.withColumn("interests", regexp_replace(dataFrame("interests"), "IAB|-[0-9]*", ""))
-    var df_non_null = res.na.fill("UNKNOWN", Seq("interests"))
-    val sqlfunc = (interestNumer: String) => {
-      val expression = new Regex("(\\A|[^0-9])4([^0-9]|\\z)")
-      expression.findAllIn("4").length match {
-        case 0 => col("interests").contains("vvvv").cast("Int")
-        case _ => col("interests").contains(interestNumer).cast("Int")
-      }
-    }
-    for (i <- 1 to 26) df_non_null = df_non_null.withColumn("IAB" + i.toString, sqlfunc(i.toString))
-    val res2 = df_non_null
-    res2.printSchema()
-    res2.show(10)
-    res2
+    import spark.implicits._
+    //Delete "IAB" and sub-categories of interests
+    val dfWithoutIab = dataFrame.withColumn("interests", regexp_replace(dataFrame("interests"), "IAB|-[0-9]*", ""))
+    //Fill N/A values
+    val df_non_null = dfWithoutIab.na.fill("UNKNOWN", Seq("interests"))
+    //Transform interests to Array of interest number
+    var dfWithArray = df_non_null.withColumn("interests", split($"interests", ",").cast("array<String>"))
+    //Create a new column for each interest with 0 (not interested) or 1 (interested)
+    for (i <- 1 to 26) dfWithArray = dfWithArray.withColumn("IAB" + i.toString, array_contains(col("interests"), i.toString).cast("Int"))
+    dfWithArray.printSchema()
+    dfWithArray.show(10)
+    dfWithArray
   }
 
   /**
@@ -211,8 +209,8 @@ object DataCleaner {
    *
    * @return The dataFrame with clean entries
    */
-  def retrieveDataFrame(): DataFrame = {
-    val df = selectData(readDataFrame())
+  def retrieveDataFrame(pathToFile: String ="data-students.json"): DataFrame = {
+    val df = selectData(readDataFrame(pathToFile))
     clean(df)
 
   }
@@ -231,25 +229,20 @@ object DataCleaner {
    * @param df : dataframe to save in a file
    */
   def saveDataFrameToCsv(df: DataFrame, name: String): Unit = {
-    val spark = SparkSession.builder().getOrCreate()
-    import spark.implicits._
-    df.coalesce(1)
-      .write.format("com.databricks.spark.csv")
-      .option("sep", ";")
+    df.repartition(1).coalesce(1)
+      .write
+      .mode ("overwrite")
+      .format("com.databricks.spark.csv")
       .option("header", "true")
-      .save(s"data/$name")
+      .save(s"data/predictions/$name")
   }
 
-  def stringify(c: Column) = concat(lit("["), concat_ws(",", c), lit("]"))
+  def stringify(c: Column): Column = concat(lit("["), concat_ws(",", c), lit("]"))
 
 
-
-  /**
-   * TEST CASE
-   */
   def main(args: Array[String]) {
-    val df = clean(selectData(readDataFrame()))
-    saveDataFrameToCsv(df, "cleaned")
+
+
     //df.write.json("result")
     /*
     val df = selectData(readDataFrame())
@@ -258,9 +251,7 @@ object DataCleaner {
     res.select("os").distinct.show()
     res.select("bidFloor").distinct.show()
      */
-    println("DataFrame size : " + df.count())
     //Limit the df and save in files
-    val limitedDf = limitDataFrame(df, 100)
     //saveDataFrameToCsv(limitedDf)
     //res.select("os").distinct.show()
     //res.select("bidFloor").distinct.show()

@@ -8,7 +8,6 @@ import org.apache.spark.sql.functions._
 
 
 object Predicter {
-
   def balanceDataset(dataset: DataFrame): DataFrame = {
 
     // Re-balancing (weighting) of records to be used in the logistic loss objective function
@@ -63,6 +62,9 @@ object Predicter {
     // Fit the model for Logistic Regression
     val balancedLR = lr.fit(balanced_dataset)
     print("fitted")
+
+
+    balancedLR.save("models/balancedModel")
 
     // Get predictions
     val predictionsBalancedLR = balancedLR.transform(testData)
