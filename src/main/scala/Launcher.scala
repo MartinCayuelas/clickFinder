@@ -1,5 +1,6 @@
 import org.apache.spark.sql.SparkSession
 import predicting.Predictor
+
 object Launcher extends App {
   override def main(args: Array[String]): Unit = {
     //Create a spark Session
@@ -9,8 +10,10 @@ object Launcher extends App {
       .config("spark.master", "local")
       .getOrCreate()
 
+    if(args.length == 0) println("No args given, exiting.")
+    else if(args(0) == "predict")  Predictor.predict(spark,args(1))
+    else println("")
 
-    Predictor.predict(spark,"data-10.json")
 
     spark.close()
   }

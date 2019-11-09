@@ -1,5 +1,7 @@
 package cleaning
 
+import java.nio.file.Paths
+
 import org.apache.spark.sql.functions.{regexp_replace, _}
 import org.apache.spark.sql.{Column, DataFrame, SparkSession}
 
@@ -15,11 +17,11 @@ object DataCleaner {
     .getOrCreate()
   spark.sparkContext.setLogLevel("ERROR")
 
-  def readDataFrame(pathToFile: String ="data-students.json"): DataFrame = {
+  def readDataFrame(pathToFile: String): DataFrame = {
     val data = spark.read.format("json")
       .option("header", "true")
       .option("inferSchema", "true")
-      .load(pathToFile)
+      .load(Paths.get(pathToFile).toAbsolutePath.toString)
     data
   }
 
@@ -242,7 +244,7 @@ object DataCleaner {
    * TEST CASE
    */
   def main(args: Array[String]) {
-    val df = clean(readDataFrame())
+    val df = clean(readDataFrame("data-students.json"))
     //df.write.json("result")
     /*
     val df = selectData(readDataFrame())

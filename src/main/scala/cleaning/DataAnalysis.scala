@@ -26,7 +26,7 @@ object DataAnalysis {
       .load("data-students.json")
 
     //val df = spark.read.json("data-students.json")
-    val df = clean(readDataFrame())
+    val df = clean(readDataFrame("data-students.json"))
     df.printSchema()
     df.createOrReplaceTempView("user")
 
