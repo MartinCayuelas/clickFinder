@@ -179,7 +179,7 @@ object DataCleaner {
         case _ => col("interests").contains(interestNumer).cast("Int")
       }
     }
-    for (i <- 1 to 2) df_non_null = df_non_null.withColumn("IAB" + i.toString, sqlfunc(i.toString))
+    for (i <- 1 to 26) df_non_null = df_non_null.withColumn("IAB" + i.toString, sqlfunc(i.toString))
     val res2 = df_non_null
     res2.printSchema()
     res2.show(10)
@@ -219,23 +219,21 @@ object DataCleaner {
 
   /**
    * Limit the number of entries for a dataframe
-   *
    * @param df   : dataframe to limit
    * @param size : number of entries wanted
    * @return a new dataframe with less entries
    */
-  def limitDataFrame(df: DataFrame, size: Int): DataFrame = df.limit(size)
+  def limitDataFrame(df: DataFrame, size: Int): DataFrame = /*df.sample(false, 0.0001, 12345)
+*/ df.limit(size)
 
   /**
    * Save a dataframe in txt file
-   *
    * @param df : dataframe to save in a file
    */
   def saveDataFrameToCsv(df: DataFrame, name: String): Unit = {
     val spark = SparkSession.builder().getOrCreate()
     import spark.implicits._
     df.coalesce(1)
-      //.withColumn("size", stringify($"size"))
       .write.format("com.databricks.spark.csv")
       .option("sep", ";")
       .option("header", "true")
@@ -244,11 +242,14 @@ object DataCleaner {
 
   def stringify(c: Column) = concat(lit("["), concat_ws(",", c), lit("]"))
 
+
+
   /**
    * TEST CASE
    */
   def main(args: Array[String]) {
-    val df = clean(readDataFrame())
+    val df = clean(selectData(readDataFrame()))
+    saveDataFrameToCsv(df, "cleaned")
     //df.write.json("result")
     /*
     val df = selectData(readDataFrame())
