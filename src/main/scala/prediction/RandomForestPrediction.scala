@@ -96,7 +96,6 @@ object RandomForestPrediction {
     cvPredictionDf.show(10)
 
     cvModel.save("model/randomForestModel")
-
     DataCleaner.saveDataFrameToCsv(cvPredictionDf.select($"label", $"prediction"), "RANDOMF")
 
     spark.stop()
