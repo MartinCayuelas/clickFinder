@@ -38,3 +38,19 @@ Recall: NaN
 
 Accuracy: 0.0
 
+--------------------------------------------------------------------
+PARAMS:
+ impurity: gini 
+ maxDepth 3 
+ numTrees 20 
+ maxBins 31
+accuracy: 0.9744595274007039 
+
+ Confusion Matrix:
+ 0.0	508.0
+0.0	19382.0
+
+Recall: NaN
+
+Accuracy: 0.0
+

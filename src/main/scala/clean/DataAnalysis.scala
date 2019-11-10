@@ -1,7 +1,8 @@
 package clean
 
-import clean.DataCleaner.{clean, readDataFrame}
+import clean.DataCleaner.clean
 import org.apache.spark.sql.SparkSession
+import utils.Tools.readDataFrame
 
 object DataAnalysis {
   val spark: SparkSession = SparkSession

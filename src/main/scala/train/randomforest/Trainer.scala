@@ -1,17 +1,13 @@
-package train
+package train.randomforest
 
-import clean.DataCleaner
 import eval.Evaluator
-import org.apache.spark.ml.Pipeline
 import org.apache.spark.ml.classification.RandomForestClassifier
 import org.apache.spark.ml.evaluation.BinaryClassificationEvaluator
 import org.apache.spark.ml.feature.VectorAssembler
-import org.apache.spark.ml.tuning.{CrossValidator, ParamGridBuilder}
-import org.apache.spark.sql.{DataFrame, SparkSession}
-import org.apache.spark.sql.functions.udf
+import org.apache.spark.sql.SparkSession
 import utils.Tools
 
-object RandomForest {
+object Trainer {
 
   def main(args: Array[String]) {
     val spark = SparkSession

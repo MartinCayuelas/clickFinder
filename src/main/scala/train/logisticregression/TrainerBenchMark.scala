@@ -1,18 +1,21 @@
-package train
-
-import java.io.{BufferedWriter, File, FileWriter}
+package train.logisticregression
 
 import eval.Evaluator
 import org.apache.spark.ml.classification.LogisticRegression
 import org.apache.spark.ml.evaluation.BinaryClassificationEvaluator
-import org.apache.spark.ml.feature.VectorAssembler
-import org.apache.spark.sql.{DataFrame, SparkSession}
-import org.apache.spark.sql.functions._
+import org.apache.spark.sql.DataFrame
 import utils.Tools
 
+object TrainerBenchMark {
 
-object LogisticRegressionBenchMark {
-
+  /**
+   * Run a logistic regression with parameters
+   * @param balanced_dataset : the dataset to train
+   * @param testData : the data for test the train
+   * @param maxIter : max number of iterations
+   * @param regParam : regularization parameter
+   * @param threshold : limit between the 2 labels
+   */
   def logisticRegression(balanced_dataset: DataFrame, testData: DataFrame, maxIter: Int, regParam: Double, threshold: Double) = {
 
     Tools.writeFile(s"--------------------------------------------------------------------\nPARAMS:\n maxIter: $maxIter \n regParam $regParam \n threshold $threshold", "results/resultLR.txt")
@@ -28,8 +31,6 @@ object LogisticRegressionBenchMark {
 
     // Fit the model for Logistic Regression
     val balancedLR = lr.fit(balanced_dataset)
-
-    //balancedLR.write.overwrite().save("models/balancedModel")
 
     // Get predictions
     val predictionsBalancedLR = balancedLR.transform(testData)
@@ -47,7 +48,6 @@ object LogisticRegressionBenchMark {
 
     predictionsBalancedLR.show(10)
     Tools.writeFile("areaUnderROC: " + accuracyBLR +"\n", "results/resultLR.txt")
-    //Tools.saveDataFrameToCsv(predictionsBalancedLR.select($"label", $"prediction"), "predictionBLR")
 
   }
 

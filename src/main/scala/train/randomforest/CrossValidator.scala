@@ -1,12 +1,10 @@
-package train
+package train.randomforest
 
 import org.apache.spark.ml.feature.VectorAssembler
-import org.apache.spark.sql.functions.udf
-import org.apache.spark.sql.{DataFrame, SparkSession}
+import org.apache.spark.sql.SparkSession
 import utils.Tools
-import train.LogisticRegressionBenchMark
 
-object CrossValidationLR {
+object CrossValidator {
 
   def main(args: Array[String]): Unit = {
     val spark = SparkSession
@@ -27,18 +25,24 @@ object CrossValidationLR {
     val data = assembler.transform(raw_data).select( $"features", $"label")
     val Array(trainingData, testData) = data.randomSplit(Array(0.8, 0.2), seed = 42)
     val balanced_dataset = Tools.balanceDataset(trainingData)
-    val maxIterTab = Array(120)
-    val regParamsTab = Array(0.03)
-    val thresholdTab = Array(0.54)
 
-    maxIterTab.foreach(maxIter =>
-      regParamsTab.foreach(regParams =>
-        thresholdTab.foreach(threshold =>
-          LogisticRegressionBenchMark.logisticRegression(balanced_dataset, testData, maxIter, regParams, threshold)
+    //Parameters to change
+    val impurityTab = Array("gini")
+    val maxDepthTab = Array(3)
+    val numTreeTab = Array(20)
+    val maxBinsTab = Array(31)
+
+    impurityTab.foreach(impurity =>
+      maxDepthTab.foreach(maxDepth =>
+        numTreeTab.foreach(numTree =>
+          maxBinsTab.foreach(maxBins =>
+            TrainerBenchMark.randomForest(balanced_dataset, testData, impurity, maxDepth, numTree, maxBins)
+          )
         )
       )
     )
 
     spark.stop()
   }
+
 }

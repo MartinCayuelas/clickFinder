@@ -1,15 +1,13 @@
-import clean.DataCleaner
+package train.logisticregression
+
 import eval.Evaluator
-import org.apache.spark.sql.SparkSession
-import org.apache.spark.sql.DataFrame
-import org.apache.spark.ml.classification.{LogisticRegression, RandomForestClassifier}
+import org.apache.spark.ml.classification.LogisticRegression
 import org.apache.spark.ml.evaluation.BinaryClassificationEvaluator
 import org.apache.spark.ml.feature.VectorAssembler
-import org.apache.spark.sql.functions._
+import org.apache.spark.sql.SparkSession
 import utils.Tools
 
-
-object LogisticRegression {
+object Trainer {
 
   def main(args: Array[String]) {
 
