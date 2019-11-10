@@ -17,18 +17,6 @@ object DataCleaner {
     .getOrCreate()
   spark.sparkContext.setLogLevel("ERROR")
 
-  def readDataFrame(pathToFile: String): DataFrame = {
-    val data = spark.read.format("json")
-      .option("header", "true")
-      .option("inferSchema", "true")
-      .load(Paths.get(pathToFile).toAbsolutePath.toString)
-    data
-  }
-
-  def selectData(dataFrame: DataFrame): DataFrame = {
-    val columns = Seq("appOrSite", "bidFloor", "timestamp", "os", "size", "label", "type", "interests", "media", "exchange")
-    dataFrame.select(columns.head, columns.tail: _*)
-  }
 
   def cleanLabel(dataFrame: DataFrame): DataFrame = {
     dataFrame.withColumn("label", dataFrame("label").cast("Int"))
