@@ -28,3 +28,13 @@ Recall: 0.05721262864120007
 
 Accuracy: 0.6456692913385826
 
+accuracy: 0.9690721649484536 
+
+ Confusion Matrix:
+ 0.0	6.0
+0.0	188.0
+
+Recall: NaN
+
+Accuracy: 0.0
+
