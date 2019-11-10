@@ -1,8 +1,9 @@
 package utils
 
 import java.io.{BufferedWriter, File, FileWriter}
+import java.nio.file.Paths
 
-import clean.DataCleaner.{clean, readDataFrame, selectData}
+import clean.DataCleaner.{clean,spark}
 import org.apache.spark.sql.{Column, DataFrame}
 import org.apache.spark.sql.functions.{concat, concat_ws, lit, udf}
 
@@ -17,6 +18,19 @@ object Tools {
     val df = selectData(readDataFrame(pathToFile))
     clean(df)
 
+  }
+
+  def readDataFrame(pathToFile: String): DataFrame = {
+    val data = spark.read.format("json")
+      .option("header", "true")
+      .option("inferSchema", "true")
+      .load(Paths.get(pathToFile).toAbsolutePath.toString)
+    data
+  }
+
+  def selectData(dataFrame: DataFrame): DataFrame = {
+    val columns = Seq("appOrSite", "bidFloor", "timestamp", "os", "size", "label", "type", "interests", "media", "exchange")
+    dataFrame.select(columns.head, columns.tail: _*)
   }
 
   /**
