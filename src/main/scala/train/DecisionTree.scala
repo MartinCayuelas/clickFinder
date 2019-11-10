@@ -1,4 +1,4 @@
-package prediction
+package train
 
 
 import org.apache.spark.ml.{Pipeline, PipelineModel}
@@ -46,7 +46,7 @@ object DecisionTree {
 
     // Convert indexed labels back to original labels.
     val labelConverter: IndexToString = new IndexToString()
-      .setInputCol("prediction")
+      .setInputCol("train")
       .setOutputCol("predictedLabel")
       .setLabels(labelIndexer.labels)
 
@@ -66,7 +66,7 @@ object DecisionTree {
     // Select (prediction, true label) and compute test error.
     val evaluator: MulticlassClassificationEvaluator = new MulticlassClassificationEvaluator()
       .setLabelCol("indexedLabel")
-      .setPredictionCol("prediction")
+      .setPredictionCol("train")
       .setMetricName("accuracy")
     val accuracy: Double = evaluator.evaluate(predictions)
     println("Test Error = " + (1.0 - accuracy))

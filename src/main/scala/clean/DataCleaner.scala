@@ -1,4 +1,4 @@
-package cleaning
+package clean
 
 import java.nio.file.Paths
 
@@ -203,41 +203,6 @@ object DataCleaner {
 
     applyMethods(methods, dataFrame)
   }
-
-  /**
-   * TODO - Pass an array of string corresponding to the columns to select
-   *
-   * @return The dataFrame with clean entries
-   */
-  def retrieveDataFrame(pathToFile: String ="data-students.json"): DataFrame = {
-    val df = selectData(readDataFrame(pathToFile))
-    clean(df)
-
-  }
-
-  /**
-   * Limit the number of entries for a dataframe
-   * @param df   : dataframe to limit
-   * @param size : number of entries wanted
-   * @return a new dataframe with less entries
-   */
-  def limitDataFrame(df: DataFrame, size: Int): DataFrame = /*df.sample(false, 0.0001, 12345)
-*/ df.limit(size)
-
-  /**
-   * Save a dataframe in txt file
-   * @param df : dataframe to save in a file
-   */
-  def saveDataFrameToCsv(df: DataFrame, name: String): Unit = {
-    df.repartition(1).coalesce(1)
-      .write
-      .mode ("overwrite")
-      .format("com.databricks.spark.csv")
-      .option("header", "true")
-      .save(s"data/$name")
-  }
-
-  def stringify(c: Column): Column = concat(lit("["), concat_ws(",", c), lit("]"))
 
 
   def main(args: Array[String]) {

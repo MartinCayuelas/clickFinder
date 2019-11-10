@@ -1,6 +1,6 @@
-package prediction
+package train
 
-import cleaning.DataCleaner.spark
+import clean.DataCleaner.spark
 import org.apache.spark.ml.{Pipeline, PipelineModel}
 import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.apache.spark.ml.classification.{LogisticRegression, LogisticRegressionModel}

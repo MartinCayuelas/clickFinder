@@ -1,4 +1,4 @@
-package evaluation
+package eval
 
 import org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator
 import org.apache.spark.mllib.evaluation.MulticlassMetrics
@@ -7,21 +7,12 @@ import org.apache.spark.sql.DataFrame
 
 object Evaluator {
 
-  def printConfusionMatrix(predictions: DataFrame): Unit = {
-/*
-    val prediction: RDD[(Double, Double)] =
-      predictions
-      .select("prediction", "label")
-      .as[(Double, Double)].rdd
-
-    val metrics = new MulticlassMetrics(prediction)
-    println(metrics.confusionMatrix)
-    */
-
-  }
-
+  /**
+   * Print accuracy, confusion matrix, recall and precision for a prediction DataFrame
+   * @param predictions : DataFrame to analyze
+   */
   def retrieveMetrics(predictions: DataFrame): Unit = {
-    val predictionsAndLabelsN = predictions.select("prediction", "label").rdd
+    val predictionsAndLabelsN = predictions.select("train", "label").rdd
       .map(row => (row.get(0).asInstanceOf[Int].toDouble,
         row.get(1).asInstanceOf[Int].toDouble))
 

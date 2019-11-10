@@ -1,5 +1,5 @@
-package prediction
-import cleaning.DataCleaner.spark
+package train
+import clean.DataCleaner.spark
 import org.apache.spark.mllib.classification.{NaiveBayes, NaiveBayesModel}
 import org.apache.spark.mllib.util.MLUtils
 import org.apache.spark.sql.SparkSession

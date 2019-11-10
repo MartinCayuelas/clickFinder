@@ -1,5 +1,5 @@
 import org.apache.spark.sql.SparkSession
-import predicting.Predictor
+import predict.Predictor
 
 object Launcher extends App {
   override def main(args: Array[String]): Unit = {

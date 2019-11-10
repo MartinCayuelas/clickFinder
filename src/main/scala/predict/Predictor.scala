@@ -1,6 +1,7 @@
-package predicting
+package predict
 
-import cleaning.DataCleaner
+import clean.DataCleaner
+import utils.Tools
 import org.apache.spark.ml.classification.LogisticRegressionModel
 import org.apache.spark.ml.feature.VectorAssembler
 import org.apache.spark.ml.tuning.CrossValidatorModel
@@ -9,6 +10,11 @@ import org.apache.spark.sql.functions._
 
 object Predictor {
 
+  /**
+   * Predict click or not click for each lines of a json file
+   * @param spark : spark session
+   * @param dataPath : path of the json file to analyze
+   */
   def predict(spark: SparkSession, dataPath: String): Unit = {
     import spark.implicits._
 
@@ -38,6 +44,6 @@ object Predictor {
     val dataFrameToSave = labelColumn.join(df, $"idl" === $"id", "left_outer").drop("id").drop("idl")
     def stringify(c: Column): Column = concat(lit("["), concat_ws(",", c), lit("]"))
 
-    DataCleaner.saveDataFrameToCsv(dataFrameToSave.withColumn("size", stringify(col("size"))), "prediction")
+    Tools.saveDataFrameToCsv(dataFrameToSave.withColumn("size", stringify(col("size"))), "train")
   }
 }

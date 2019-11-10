@@ -1,4 +1,4 @@
-import cleaning.DataCleaner
+import clean.DataCleaner
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.ml._
 import org.apache.spark.ml.feature._
@@ -13,6 +13,7 @@ import org.apache.spark.ml.tuning.CrossValidator
 import org.apache.spark.ml.evaluation.BinaryClassificationEvaluator
 import org.apache.spark.mllib.evaluation.MulticlassMetrics
 import org.apache.spark.mllib.util.MLUtils._
+import utils.Tools
 
 
 object UnderSampling {
@@ -25,7 +26,7 @@ object UnderSampling {
       .getOrCreate()
 
     sparkSession.sparkContext.setLogLevel("ERROR")
-    val df = DataCleaner.retrieveDataFrame()
+    val df = Tools.retrieveDataFrameCleaned()
     df.printSchema()
 
     val amountVectorAssembler = new VectorAssembler().setInputCols(Array("label")).setOutputCol("label_vector")
@@ -68,8 +69,8 @@ object UnderSampling {
   }
 
   def printScores(model: PipelineModel, df: DataFrame) = {
-    println("test accuracy with pipeline " + accuracyScore(model.transform(df), "label", "prediction"))
-    println("test recall for 1 is " + recall(model.transform(df), "label", "prediction", 1))
+    println("test accuracy with pipeline " + accuracyScore(model.transform(df), "label", "train"))
+    println("test recall for 1 is " + recall(model.transform(df), "label", "train", 1))
   }
 
 
