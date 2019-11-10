@@ -1,8 +1,8 @@
 .idea
 /target
-/project/target
+/project
 data-students.json
 /data
 /result
-/project/target/
 model
+models

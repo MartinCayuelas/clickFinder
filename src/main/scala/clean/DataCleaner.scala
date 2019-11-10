@@ -179,8 +179,8 @@ object DataCleaner {
     var dfWithArray = df_non_null.withColumn("interests", split($"interests", ",").cast("array<String>"))
     //Create a new column for each interest with 0 (not interested) or 1 (interested)
     for (i <- 1 to 26) dfWithArray = dfWithArray.withColumn("IAB" + i.toString, array_contains(col("interests"), i.toString).cast("Int"))
-    dfWithArray.printSchema()
-    dfWithArray.show(10)
+    //dfWithArray.printSchema()
+    //dfWithArray.show(10)
     dfWithArray
   }
 

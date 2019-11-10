@@ -2,7 +2,7 @@ package utils
 
 import clean.DataCleaner.{clean, readDataFrame, selectData}
 import org.apache.spark.sql.{Column, DataFrame}
-import org.apache.spark.sql.functions.{concat, concat_ws, lit}
+import org.apache.spark.sql.functions.{concat, concat_ws, lit, udf}
 
 object Tools {
 
@@ -38,6 +38,24 @@ object Tools {
       .format("com.databricks.spark.csv")
       .option("header", "true")
       .save(s"data/$name")
+  }
+
+  def balanceDataset(dataset: DataFrame): DataFrame = {
+    // Re-balancing (weighting) of records to be used in the logistic loss objective function
+    val numNegatives = dataset.filter(dataset("label") === 0).count
+    val datasetSize = dataset.count
+    val balancingRatio = (datasetSize - numNegatives).toDouble / datasetSize
+
+    val calculateWeights = udf { d: Double =>
+      if (d == 0.0) {
+        1 * balancingRatio
+      }
+      else {
+        1 * (1.0 - balancingRatio)
+      }
+    }
+    val weightedDataset = dataset.withColumn("classWeightCol", calculateWeights(dataset("label")))
+    weightedDataset
   }
 
   def stringify(c: Column): Column = concat(lit("["), concat_ws(",", c), lit("]"))

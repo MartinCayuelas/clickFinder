@@ -10,7 +10,7 @@ object Launcher extends App {
       .config("spark.master", "local")
       .getOrCreate()
 
-    if(args.length == 0) println("No args given, exiting.")
+    if(args.length == 0) println("You should provide an action and a path to your dataset.")
     else if(args(0) == "predict")  Predictor.predict(spark,args(1))
     else println("")
 

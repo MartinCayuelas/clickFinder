@@ -80,7 +80,7 @@ object RandomForestPrediction {
   .addGrid(randomForestClassifier.maxDepth, Array(7, 8, 9))
   .addGrid(randomForestClassifier.impurity, Array("entropy", "gini"))
 */
-  .addGrid(randomForestClassifier.maxBins, Array( 31))
+  .addGrid(randomForestClassifier.maxBins, Array(31))
   .addGrid(randomForestClassifier.maxDepth, Array(8))
   .addGrid(randomForestClassifier.impurity, Array("gini"))
 
@@ -103,6 +103,7 @@ object RandomForestPrediction {
     println("evaluation:")
     println(evaluator.evaluate(cvPredictionDf))
     cvPredictionDf.show(10)
+
     Evaluator.retrieveMetrics(cvPredictionDf)
 
     cvModel.write.overwrite().save("model/randomForestModel")
