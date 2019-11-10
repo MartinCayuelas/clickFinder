@@ -28,9 +28,9 @@ object CrossValidator {
 
     //Parameters to change
     val impurityTab = Array("gini")
-    val maxDepthTab = Array(3)
-    val numTreeTab = Array(20)
-    val maxBinsTab = Array(31)
+    val maxDepthTab = Array(7,8,9)
+    val numTreeTab = Array(40,45,50)
+    val maxBinsTab = Array(90,100,110)
 
     impurityTab.foreach(impurity =>
       maxDepthTab.foreach(maxDepth =>

@@ -17,8 +17,8 @@ object Trainer {
       .getOrCreate()
     import spark.implicits._
 
-    val raw = Tools.retrieveDataFrameCleaned()
-    val raw_data = Tools.limitDataFrame(raw, 1000)
+    val raw_data = Tools.retrieveDataFrameCleaned()
+    //val raw_data = Tools.limitDataFrame(raw, 1000)
 
 
     val featuresCols = Array("appOrSite", "size", "os", "bidFloor", "type", "exchange", "media", "IAB1", "IAB2", "IAB3", "IAB4", "IAB5", "IAB6", "IAB7", "IAB8", "IAB9", "IAB10", "IAB11", "IAB12", "IAB13", "IAB14", "IAB15", "IAB16", "IAB17", "IAB18", "IAB19", "IAB20", "IAB21", "IAB22", "IAB23", "IAB24", "IAB25", "IAB26")
@@ -31,14 +31,14 @@ object Trainer {
 
     val randomForestClassifier = new RandomForestClassifier()
       .setImpurity("gini")
-      .setMaxDepth(3)
-      .setNumTrees(20)
-      .setMaxBins(31)
+      .setMaxDepth(9)
+      .setNumTrees(50)
+      .setMaxBins(110)
       .setFeatureSubsetStrategy("auto")
       .setSeed(42)
 
     val balancedRF = randomForestClassifier.fit(trainingData)
-    balancedRF.write.overwrite().save("models/balancedModel")
+    balancedRF.write.overwrite().save("models/randomForestModel")
 
     val predictionsBalancedRF = balancedRF.transform(testData)
 
