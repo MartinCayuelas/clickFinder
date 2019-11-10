@@ -9,9 +9,10 @@ import org.apache.spark.sql.functions._
 import utils.Tools
 
 
-object Predicter {
+object LogisticRegression {
 
   def main(args: Array[String]) {
+
     val spark = SparkSession
       .builder()
       .appName("ClickFinder")
@@ -57,7 +58,7 @@ object Predicter {
     val accuracyBLR = evaluator.evaluate(predictionsBalancedLR)
     println("areaUnderROC: " + accuracyBLR)
 
-    Evaluator.retrieveMetrics(predictionsBalancedLR)
+    Evaluator.retrieveMetrics(predictionsBalancedLR, "results/resultLR.txt")
 
     println(s"Intercept: ${balancedLR.intercept}")
 

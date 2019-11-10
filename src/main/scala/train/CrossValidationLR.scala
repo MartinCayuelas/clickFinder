@@ -34,7 +34,7 @@ object CrossValidationLR {
     maxIterTab.foreach(maxIter =>
       regParamsTab.foreach(regParams =>
         thresholdTab.foreach(threshold =>
-          LogisticRegressionBenchMark.regression(balanced_dataset, testData, maxIter, regParams, threshold)
+          LogisticRegressionBenchMark.logisticRegression(balanced_dataset, testData, maxIter, regParams, threshold)
         )
       )
     )

@@ -7,6 +7,7 @@ import org.apache.spark.mllib.evaluation.MulticlassMetrics
 import org.apache.spark.mllib.linalg.Matrix
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.DataFrame
+import utils.Tools
 
 object Evaluator {
 
@@ -14,8 +15,9 @@ object Evaluator {
    * Print accuracy, confusion matrix, recall and precision for a prediction DataFrame
    *
    * @param predictions : DataFrame to analyze
+   * @param filePath : path of the file for results saving
    */
-  def retrieveMetrics(predictions: DataFrame): Unit = {
+  def retrieveMetrics(predictions: DataFrame, filePath: String): Unit = {
     val predictionsAndLabelsN = predictions.select("prediction", "label").rdd
       .map(row => (row.getDouble(0),
         row.get(1).asInstanceOf[Int].toDouble))
@@ -38,21 +40,11 @@ object Evaluator {
     println(s"Recall: ${recallMatrix}")
     println(s"Accuracy: ${accuracyMatrix}")
 
-    writeFile(s"accuracy: ${accuracy} \n")
-    writeFile(s" Confusion Matrix:\n ${confusionMatrix(0)(0)}\t${confusionMatrix(0)(1)}\n${confusionMatrix(1)(0)}\t${confusionMatrix(1)(1)}\n")
-    writeFile(s"Recall: ${recallMatrix}\n")
-    writeFile(s"Accuracy: ${accuracyMatrix}\n")
+    Tools.writeFile(s"accuracy: ${accuracy} \n", filePath)
+    Tools.writeFile(s" Confusion Matrix:\n ${confusionMatrix(0)(0)}\t${confusionMatrix(0)(1)}\n${confusionMatrix(1)(0)}\t${confusionMatrix(1)(1)}\n", filePath)
+    Tools.writeFile(s"Recall: ${recallMatrix}\n", filePath)
+    Tools.writeFile(s"Accuracy: ${accuracyMatrix}\n", filePath)
 
-    /*
-    val nbTrue = pipelineTestingData.filter(df("label")=== 1.0).count().toDouble
-    val nbFalse = pipelineTestingData.filter(df("label")=== 0.0).count().toDouble
-
-    println(s"ACCU : ${accuracy*100}")
-    println(s"RENTA : ${(confusionMatrixN.apply(1,1)/(confusionMatrixN.apply(1,1)+confusionMatrixN.apply(0,1)))*100}")
-    println(s"FINDS : ${(confusionMatrixN.apply(1,1)/nbTrue)*100}")
-
-    println(s" NB FALSE : $nbFalse AND NB TRUE : $nbTrue")
-    */
   }
 
   def inverseMatrix(matrix: Matrix): Array[Array[Double]] = {
@@ -69,11 +61,5 @@ object Evaluator {
     result
   }
 
-  def writeFile(s: String): Unit = {
-    val file = new File("resultLR.txt")
-    val bw = new BufferedWriter(new FileWriter(file, true))
-    bw.write(s)
-    bw.write("\n")
-    bw.close()
-  }
+
 }

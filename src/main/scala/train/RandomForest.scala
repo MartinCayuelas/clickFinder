@@ -11,7 +11,7 @@ import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.apache.spark.sql.functions.udf
 import utils.Tools
 
-object RandomForestPrediction {
+object RandomForest {
 
   def main(args: Array[String]) {
     val spark = SparkSession
@@ -104,7 +104,7 @@ object RandomForestPrediction {
     println(evaluator.evaluate(cvPredictionDf))
     cvPredictionDf.show(10)
 
-    Evaluator.retrieveMetrics(cvPredictionDf)
+    Evaluator.retrieveMetrics(cvPredictionDf, "results/resultRF.txt")
 
     cvModel.write.overwrite().save("model/randomForestModel")
     Tools.saveDataFrameToCsv(cvPredictionDf.select($"label", $"prediction"), "RANDOMF")

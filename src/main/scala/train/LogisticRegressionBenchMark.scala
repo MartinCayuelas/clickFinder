@@ -3,9 +3,11 @@ package train
 import java.io.{BufferedWriter, File, FileWriter}
 
 import eval.Evaluator
-import org.apache.spark.ml.classification.LogisticRegression
+import org.apache.spark.ml.Pipeline
+import org.apache.spark.ml.classification.{LogisticRegression, RandomForestClassifier}
 import org.apache.spark.ml.evaluation.BinaryClassificationEvaluator
 import org.apache.spark.ml.feature.VectorAssembler
+import org.apache.spark.ml.tuning.{CrossValidator, ParamGridBuilder}
 import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.apache.spark.sql.functions._
 import utils.Tools
@@ -13,26 +15,77 @@ import utils.Tools
 
 object LogisticRegressionBenchMark {
 
-  def balanceDataset(dataset: DataFrame): DataFrame = {
-    // Re-balancing (weighting) of records to be used in the logistic loss objective function
-    val numNegatives = dataset.filter(dataset("label") === 0).count
-    val datasetSize = dataset.count
-    val balancingRatio = (datasetSize - numNegatives).toDouble / datasetSize
+  /*def logisticRegression(balanced_dataset: DataFrame, testData: DataFrame, maxIter: Int, regParam: Double, threshold: Double) = {
 
-    val calculateWeights = udf { d: Double =>
-      if (d == 0.0) {
-        1 * balancingRatio
-      }
-      else {
-        1 * (1.0 - balancingRatio)
-      }
-    }
-    val weightedDataset = dataset.withColumn("classWeightCol", calculateWeights(dataset("label")))
-    weightedDataset
-  }
+    Tools.writeFile(s"--------------------------------------------------------------------\nPARAMS:\n maxIter: $maxIter \n regParam $regParam \n threshold $threshold", "results/resultLR.txt")
 
-  def regression(balanced_dataset: DataFrame, testData: DataFrame, maxIter: Int, regParam: Double, threshold: Double) = {
-    writeFile(s"--------------------------------------------------------------------\nPARAMS:\n maxIter: $maxIter \n regParam $regParam \n threshold $threshold")
+    val randomForestClassifier = new RandomForestClassifier()
+      .setImpurity("gini")
+      .setMaxDepth(3)
+      .setNumTrees(20)
+      .setFeatureSubsetStrategy("auto")
+      .setSeed(42)
+
+    // evaluate model with area under ROC
+    val evaluator = new BinaryClassificationEvaluator()
+      .setLabelCol("label")
+      .setMetricName("areaUnderROC")
+
+
+    val stages = Array(assembler, randomForestClassifier)
+
+    // build pipeline
+    val pipeline = new Pipeline().setStages(stages)
+    val pipelineModel = pipeline.fit(trainingData)
+
+    // test model with test data
+    val pipelinePredictionDf = pipelineModel.transform(testData)
+    pipelinePredictionDf.show(10)
+    val pipelineAccuracy = evaluator.evaluate(pipelinePredictionDf)
+    println(pipelineAccuracy)
+
+    val paramGrid = new ParamGridBuilder()
+      /*
+  .addGrid(randomForestClassifier.maxBins, Array(100, 90, 80))
+  .addGrid(randomForestClassifier.numTrees, Array(40, 35, 30))
+  .addGrid(randomForestClassifier.maxDepth, Array(7, 8, 9))
+  .addGrid(randomForestClassifier.impurity, Array("entropy", "gini"))
+*/
+      .addGrid(randomForestClassifier.maxBins, Array(31))
+      .addGrid(randomForestClassifier.maxDepth, Array(8))
+      .addGrid(randomForestClassifier.impurity, Array("gini"))
+
+      .build()
+
+    // define cross validation stage to search through the parameters
+    // K-Fold cross validation with BinaryClassificationEvaluator
+    val cv = new CrossValidator()
+      .setEstimator(pipeline)
+      .setEvaluator(evaluator)
+      .setEstimatorParamMaps(paramGrid)
+      .setNumFolds(5)
+
+    // fit will run cross validation and choose the best set of parameters
+    // this will take some time to run
+    val cvModel = cv.fit(trainingData)
+
+    // test cross validated model with test data
+    val cvPredictionDf = cvModel.transform(testData)
+    println("evaluation:")
+    println(evaluator.evaluate(cvPredictionDf))
+    cvPredictionDf.show(10)
+
+    Evaluator.retrieveMetrics(cvPredictionDf, "results/resultRF.txt")
+
+    cvModel.write.overwrite().save("model/randomForestModel")
+    Tools.saveDataFrameToCsv(cvPredictionDf.select($"label", $"prediction"), "RANDOMF")
+
+
+
+
+
+
+
 
     val lr = new LogisticRegression()
       .setLabelCol("label")
@@ -59,20 +112,13 @@ object LogisticRegressionBenchMark {
     val accuracyBLR = evaluator.evaluate(predictionsBalancedLR)
 
     println("areaUnderROC: " + accuracyBLR)
-    Evaluator.retrieveMetrics(predictionsBalancedLR)
+    Evaluator.retrieveMetrics(predictionsBalancedLR, "results/resultLR.txt")
     println(s"Intercept: ${balancedLR.intercept}")
 
     predictionsBalancedLR.show(10)
-    writeFile("areaUnderROC: " + accuracyBLR +"\n")
+    Tools.writeFile("areaUnderROC: " + accuracyBLR +"\n", "results/resultLR.txt")
     //Tools.saveDataFrameToCsv(predictionsBalancedLR.select($"label", $"prediction"), "predictionBLR")
 
-  }
+  }*/
 
-  def writeFile(s: String): Unit = {
-    val file = new File("resultLR.txt")
-    val bw = new BufferedWriter(new FileWriter(file, true))
-    bw.write(s)
-    bw.write("\n")
-    bw.close()
-  }
 }

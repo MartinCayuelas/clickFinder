@@ -1,5 +1,7 @@
 package utils
 
+import java.io.{BufferedWriter, File, FileWriter}
+
 import clean.DataCleaner.{clean, readDataFrame, selectData}
 import org.apache.spark.sql.{Column, DataFrame}
 import org.apache.spark.sql.functions.{concat, concat_ws, lit, udf}
@@ -59,5 +61,13 @@ object Tools {
   }
 
   def stringify(c: Column): Column = concat(lit("["), concat_ws(",", c), lit("]"))
+
+  def writeFile(s: String, filePath: String): Unit = {
+    val file = new File(filePath)
+    val bw = new BufferedWriter(new FileWriter(file, true))
+    bw.write(s)
+    bw.write("\n")
+    bw.close()
+  }
 
 }
