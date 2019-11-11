@@ -31,4 +31,4 @@ java -jar clickFinder.jar train <nameFile> <modelName>
 ```
 
 #### Result
-The prediction results can be found in the ```output/<fileNameGivenWithoutExtension>/part-00000-xxxxxx.csv``` folder
+The prediction results can be found in the ```output/<fileNameGiven>/part-00000-xxxxxx.csv``` folder

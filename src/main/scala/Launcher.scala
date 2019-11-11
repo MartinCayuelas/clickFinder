@@ -1,10 +1,16 @@
 import org.apache.spark.sql.SparkSession
 import predict.Predictor
 import train.randomforest.Trainer
+import org.apache.log4j.Logger
+import org.apache.log4j.Level
+
+
 
 object Launcher extends App {
   override def main(args: Array[String]): Unit = {
     // Create a spark Session
+    Logger.getLogger("org").setLevel(Level.OFF)
+    Logger.getLogger("akka").setLevel(Level.OFF)
 
     val spark = SparkSession
       .builder()
@@ -13,7 +19,7 @@ object Launcher extends App {
       .getOrCreate()
 
     if  (args.length < 1) {
-      print("Use command train | predict | predict1000.");
+      println("Use command train | predict | predict1000.");
     }
 
     val command = args(0)
@@ -25,7 +31,7 @@ object Launcher extends App {
           case _ => println("See Usage")
         }
       }
-        print (args)
+
       case "predict" =>
         args match {
           case Array(c, filepath, name) => Predictor.predict(spark,filepath, name)
@@ -35,10 +41,10 @@ object Launcher extends App {
       case "predict1000" => {
         args match {
           case Array(c, filepath) => Predictor.predict1000(spark, filepath)
-          case _ => print("See usage")
+          case _ => println("See usage")
         }
       }
-      case _ => print("See usage.")
+      case _ => println("See usage.")
     }
 
 

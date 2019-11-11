@@ -38,15 +38,19 @@ object Predictor {
       .withColumn("prediction", when($"prediction" === 0.0, false).otherwise(true))
 
     val labelColumn = predictions.select("prediction").withColumn("idl", monotonically_increasing_id())
-    val dataFrameToSave = labelColumn.join(df, $"idl" === $"id", "left_outer").drop("id").drop("idl")
+    val dataFrame = labelColumn.join(df, $"idl" === $"id", "left_outer").drop("id").drop("idl")
 
-<<<<<<< HEAD
-    Tools.saveDataFrameToCsv(dataFrameToSave.withColumn("size", Tools.stringify(col("size"))), s"output/${dataPath}")
+
+    val dataFrameToSave = dataFrame.columns.contains("label") match {
+      case true => dataFrame.drop("label")
+      case false => dataFrame
+    }
+    Tools.saveDataFrameToCsv(dataFrameToSave.withColumn("size", Tools.stringify(col("size"))).withColumnRenamed("prediction", "label"), s"output/${dataPath}")
     println(s"result can be found at: output/${dataPath}")
-=======
-    Tools.saveDataFrameToCsv(dataFrameToSave.withColumn("size", stringify(col("size"))).withColumnRenamed("prediction", "label"), "output")
->>>>>>> d7df1068711f625551cb356ceeabb77856bcdaa3
+    spark.close()
   }
+  
+  
 
   /**
    * Predict click or not click for each lines of a json file

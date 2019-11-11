@@ -1393,3 +1393,29 @@ Accuracy: 0.37598425196850394
 areaUnderROC: 0.687992125984252
 
 
+accuracy: 0.6666666666666666 
+
+Confusion Matrix:
+ 2.0  0.0  
+1.0  0.0  
+Recall click: NaN
+
+Accuracy click: 0.0
+
+Recall non click: 0.6666666666666666
+
+Accuracy non click: 1.0
+
+accuracy: 0.9846686250050299 
+
+Confusion Matrix:
+ 96779.0  0.0     
+1524.0   1101.0  
+Recall click: 1.0
+
+Accuracy click: 0.41942857142857143
+
+Recall non click: 0.9844969126069397
+
+Accuracy non click: 1.0
+
