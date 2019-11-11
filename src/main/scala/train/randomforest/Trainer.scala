@@ -10,7 +10,7 @@ import utils.Tools
 
 object Trainer {
 
-  def train(spark: SparkSession, path: String) {
+  def train(spark: SparkSession, path: String, name: String) {
     /*val spark = SparkSession
       .builder()
       .appName("ClickFinder")
@@ -39,7 +39,7 @@ object Trainer {
       .setSeed(42)
 
     val balancedRF = randomForestClassifier.fit(trainingData)
-    balancedRF.write.overwrite().save("models/randomForestModel")
+    balancedRF.write.overwrite().save(s"models/${name}")
 
     val predictionsBalancedRF = balancedRF.transform(testData)
 
@@ -53,7 +53,7 @@ object Trainer {
     println("areaUnderROC: " + accuracyBRF)
     predictionsBalancedRF.show(50)
     Evaluator.retrieveMetrics(predictionsBalancedRF, "results/resultRF.txt")
-    Tools.saveDataFrameToCsv(predictionsBalancedRF.select($"label", $"prediction"), "predictionBRF")
+
     spark.stop()
   }
 }

@@ -13,7 +13,7 @@ object Predictor {
    * @param spark : spark session
    * @param dataPath : path of the json file to analyze
    */
-  def predict(spark: SparkSession, dataPath: String): Unit = {
+  def predict(spark: SparkSession, dataPath: String, name: String): Unit = {
     import spark.implicits._
 
     val data = Tools.readDataFrame(dataPath)
@@ -32,7 +32,7 @@ object Predictor {
 
 
     //val model = LogisticRegressionModel.load("model/randomForestModel").setPredictionCol("label").setFeaturesCol("features")
-   val model = RandomForestClassificationModel.load("models/randomForestModel")
+   val model = RandomForestClassificationModel.load(s"models/${name}")
 
     val predictions = model
       .transform(dataAssembled)
@@ -42,7 +42,7 @@ object Predictor {
     val dataFrameToSave = labelColumn.join(df, $"idl" === $"id", "left_outer").drop("id").drop("idl")
     def stringify(c: Column): Column = concat(lit("["), concat_ws(",", c), lit("]"))
 
-    Tools.saveDataFrameToCsv(dataFrameToSave.withColumn("size", stringify(col("size"))), "output")
+    Tools.saveDataFrameToCsv(dataFrameToSave.withColumn("size", stringify(col("size"))), s"output/${name}")
   }
 
   /**
