@@ -10,7 +10,6 @@ To run the project
 git clone https://github.com/MartinCayuelas/clickFinder.git
 cd clickFinder
 sbt assembly
-mv ./target/scala-2.12/clickFinder-assembly-0.1.jar clickFinder.jar
 ```
 ⚠️ Do not remove or modify the model folder!
 #### Predict

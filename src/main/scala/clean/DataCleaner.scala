@@ -1,9 +1,7 @@
 package clean
 
-import java.nio.file.Paths
-
 import org.apache.spark.sql.functions.{regexp_replace, _}
-import org.apache.spark.sql.{Column, DataFrame, SparkSession}
+import org.apache.spark.sql.{DataFrame, SparkSession}
 
 import scala.annotation.tailrec
 
@@ -163,8 +161,12 @@ object DataCleaner {
    * @param dataFrame
    * @return
    */
-  def clean(dataFrame: DataFrame): DataFrame = {
-    val methods: Seq[DataFrame => DataFrame] = Seq(cleanOS, cleanBidFloor, cleanAppOrSite, cleanLabel, cleanTimestamp, cleanSize, cleanType, cleanInterests, cleanExchange, cleanMedia)
+  def clean(dataFrame: DataFrame,prediction: Boolean = false): DataFrame = {
+    val methods: Seq[DataFrame => DataFrame] = if(prediction) {
+      Seq(cleanOS, cleanBidFloor, cleanAppOrSite, cleanTimestamp, cleanSize, cleanType, cleanInterests, cleanExchange, cleanMedia)
+    }else {
+      Seq(cleanOS, cleanBidFloor, cleanAppOrSite, cleanLabel, cleanTimestamp, cleanSize, cleanType, cleanInterests, cleanExchange, cleanMedia)
+    }
     @tailrec
     def applyMethods(methods: Seq[DataFrame => DataFrame], res: DataFrame): DataFrame = {
       methods match {

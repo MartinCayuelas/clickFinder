@@ -14,9 +14,9 @@ object Tools {
    * @param pathToFile : path of the file to retrieve
    * @return a cleaned DataFrame
    */
-  def retrieveDataFrameCleaned(pathToFile: String ="data-students.json"): DataFrame = {
-    val df = selectData(readDataFrame(pathToFile))
-    clean(df)
+  def retrieveDataFrameCleaned(pathToFile: String ="data-students.json", prediction: Boolean = false): DataFrame = {
+    val df = selectData(readDataFrame(pathToFile),prediction)
+    clean(df,prediction)
   }
 
   def readDataFrame(pathToFile: String): DataFrame = {
@@ -32,10 +32,15 @@ object Tools {
    * @param dataFrame
    * @return
    */
-  def selectData(dataFrame: DataFrame): DataFrame = {
-    val columns = Seq("appOrSite", "bidFloor", "timestamp", "os", "size", "label", "type", "interests", "media", "exchange")
+  def selectData(dataFrame: DataFrame,prediction: Boolean = false): DataFrame = {
+    val columns = if (prediction) {
+      Seq("appOrSite", "bidFloor", "timestamp", "os", "size", "type", "interests", "media", "exchange")
+    } else {
+      Seq("appOrSite", "bidFloor", "timestamp", "os", "size", "label", "type", "interests", "media", "exchange")
+    }
     dataFrame.select(columns.head, columns.tail: _*)
   }
+
 
   /**
    * Limit the number of entries for a dataframe
