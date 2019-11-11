@@ -10,7 +10,6 @@ To run the project
 git clone https://github.com/MartinCayuelas/clickFinder.git
 cd clickFinder
 sbt assembly
-mv ./target/scala-2.12/clickFinder-assembly-0.1.jar clickFinder.jar
 ```
 ⚠️ Do not remove or modify the model folder!
 #### Predict
@@ -33,4 +32,4 @@ java -jar clickFinder.jar train nameFile
 ```
 
 #### Result
-The prediction results can be found in the ```data/predictions/prediction/part-00000-xxxxxx.csv``` folder
+The prediction results can be found in the ```output/part-00000-xxxxxx.csv``` folder
