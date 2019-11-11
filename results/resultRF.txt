@@ -846,3 +846,29 @@ Recall: 1.0
 
 Accuracy: 0.2853881278538813
 
+accuracy: 0.9854198089492208 
+
+Confusion Matrix:
+ 19382.0  0.0    
+290.0    218.0  
+Recall click: 0.9852582350549004
+
+Accuracy click: 1.0
+
+Recall non click: 1.0
+
+Accuracy non click: 0.42913385826771655
+
+accuracy: 0.9853124059773343 
+
+Confusion Matrix:
+ 194164.0  0.0     
+2929.0    2327.0  
+Recall click: 1.0
+
+Accuracy click: 0.4427321156773212
+
+Recall non click: 0.9851389952966366
+
+Accuracy non click: 1.0
+
