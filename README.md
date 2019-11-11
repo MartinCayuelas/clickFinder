@@ -11,25 +11,24 @@ git clone https://github.com/MartinCayuelas/clickFinder.git
 cd clickFinder
 sbt assembly
 ```
-⚠️ Do not remove or modify the model folder!
+⚠️ Do not remove or modify the `models` folder!
 #### Predict
-⚠️ If you have a `predictions` folder, please delete it before running the prediction.
 
 To predict 
 ```shell script
-java -jar clickFinder.jar predict nameFile
+java -jar clickFinder.jar predict <nameFile> <modelName (default = "randomForestModel")>
 ```
 
 To predict 1000 rows
 ```shell script
-java -jar clickFinder.jar predict1000 nameFile
+java -jar clickFinder.jar predict1000 <nameFile>
 ```
 
 #### Train
 To train
 ```shell script
-java -jar clickFinder.jar train nameFile
+java -jar clickFinder.jar train <nameFile> <modelName>
 ```
 
 #### Result
-The prediction results can be found in the ```output/part-00000-xxxxxx.csv``` folder
+The prediction results can be found in the ```output/<fileNameGivenWithoutExtension>/part-00000-xxxxxx.csv``` folder
