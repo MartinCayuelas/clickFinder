@@ -41,7 +41,7 @@ object Predictor {
     val dataFrameToSave = labelColumn.join(df, $"idl" === $"id", "left_outer").drop("id").drop("idl")
     def stringify(c: Column): Column = concat(lit("["), concat_ws(",", c), lit("]"))
 
-    Tools.saveDataFrameToCsv(dataFrameToSave.withColumn("size", stringify(col("size"))), "output")
+    Tools.saveDataFrameToCsv(dataFrameToSave.withColumn("size", stringify(col("size"))).withColumnRenamed("prediction", "label"), "output")
   }
 
   /**
