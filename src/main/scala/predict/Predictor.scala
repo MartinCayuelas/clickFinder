@@ -2,8 +2,8 @@ package predict
 
 import org.apache.spark.ml.classification.RandomForestClassificationModel
 import org.apache.spark.ml.feature.VectorAssembler
+import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions._
-import org.apache.spark.sql.{Column, SparkSession}
 import utils.Tools
 
 object Predictor {
@@ -29,9 +29,7 @@ object Predictor {
 
     val dataAssembled = assembler.transform(dataBeforeAssembling)
 
-
-    //val model = LogisticRegressionModel.load("model/randomForestModel").setPredictionCol("label").setFeaturesCol("features")
-   val model = RandomForestClassificationModel.load(s"models/${name}")
+    val model = RandomForestClassificationModel.load(s"models/${name}")
 
     val predictions = model
       .transform(dataAssembled)
@@ -45,8 +43,11 @@ object Predictor {
       case true => dataFrame.drop("label")
       case false => dataFrame
     }
-    Tools.saveDataFrameToCsv(dataFrameToSave.withColumn("size", Tools.stringify(col("size"))).withColumnRenamed("prediction", "label"), s"output/${dataPath}")
-    println(s"result can be found at: output/${dataPath}")
+
+    val fileName = dataPath.split("/").last
+
+    Tools.saveDataFrameToCsv(dataFrameToSave.withColumn("size", Tools.stringify(col("size"))).withColumnRenamed("prediction", "label"), s"output/${fileName}")
+    println(s"result can be found at: output/${fileName}")
     spark.close()
   }
   

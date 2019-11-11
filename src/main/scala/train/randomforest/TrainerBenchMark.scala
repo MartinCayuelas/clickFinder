@@ -47,7 +47,6 @@ object TrainerBenchMark {
     println("areaUnderROC: " + accuracyBRF)
     Evaluator.retrieveMetrics(predictionsBalancedRF, "results/resultRF.txt")
 
-    predictionsBalancedRF.show(10)
     Tools.writeFile("areaUnderROC: " + accuracyBRF +"\n", "results/resultRF.txt")
 
   }

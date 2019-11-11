@@ -11,16 +11,9 @@ import utils.Tools
 object Trainer {
 
   def train(spark: SparkSession, path: String, name: String) {
-    /*val spark = SparkSession
-      .builder()
-      .appName("ClickFinder")
-      .config("spark.master", "local")
-      .getOrCreate()
-      */
+
     import spark.implicits._
-    //val raw_data = Tools.retrieveDataFrameCleaned()
     val raw_data = DataCleaner.clean(Tools.selectData(Tools.readDataFrame(path)))
-    //val raw_data = Tools.limitDataFrame(Tools.retrieveDataFrameCleaned(), 100000)
 
 
     val featuresCols = Array("appOrSite", "size", "os", "bidFloor", "type", "exchange", "media", "IAB1", "IAB2", "IAB3", "IAB4", "IAB5", "IAB6", "IAB7", "IAB8", "IAB9", "IAB10", "IAB11", "IAB12", "IAB13", "IAB14", "IAB15", "IAB16", "IAB17", "IAB18", "IAB19", "IAB20", "IAB21", "IAB22", "IAB23", "IAB24", "IAB25", "IAB26")
@@ -51,7 +44,6 @@ object Trainer {
 
     val accuracyBRF = evaluator.evaluate(predictionsBalancedRF)
     println("areaUnderROC: " + accuracyBRF)
-    predictionsBalancedRF.show(50)
     Evaluator.retrieveMetrics(predictionsBalancedRF, "results/resultRF.txt")
 
     println(s"result can be found at: models/${name}")

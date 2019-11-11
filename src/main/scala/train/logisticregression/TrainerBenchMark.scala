@@ -46,7 +46,6 @@ object TrainerBenchMark {
     Evaluator.retrieveMetrics(predictionsBalancedLR, "results/resultLR.txt")
     println(s"Intercept: ${balancedLR.intercept}")
 
-    predictionsBalancedLR.show(10)
     Tools.writeFile("areaUnderROC: " + accuracyBLR +"\n", "results/resultLR.txt")
 
   }

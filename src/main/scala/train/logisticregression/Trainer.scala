@@ -20,8 +20,6 @@ object Trainer {
     import spark.implicits._
 
     val raw_data = Tools.retrieveDataFrameCleaned()
-    //val raw_data = Tools.limitDataFrame(Tools.retrieveDataFrameCleaned(), 100000)
-
 
     val featuresCols = Array("appOrSite", "size", "os", "bidFloor", "type", "exchange", "media", "IAB1", "IAB2", "IAB3", "IAB4", "IAB5", "IAB6", "IAB7", "IAB8", "IAB9", "IAB10", "IAB11", "IAB12", "IAB13", "IAB14", "IAB15", "IAB16", "IAB17", "IAB18", "IAB19", "IAB20", "IAB21", "IAB22", "IAB23", "IAB24", "IAB25", "IAB26")
     val assembler = new VectorAssembler()
@@ -32,7 +30,6 @@ object Trainer {
     val Array(trainingData, testData) = data.randomSplit(Array(0.8, 0.2), seed = 42)
 
     val balanced_dataset = Tools.balanceDataset(trainingData)
-    balanced_dataset.show(20)
 
     val lr = new LogisticRegression()
       .setLabelCol("label")
@@ -45,7 +42,6 @@ object Trainer {
 
     // Fit the model for Logistic Regression
     val balancedLR = lr.fit(balanced_dataset)
-    //balancedLR.write.overwrite().save("models/balancedModel")
 
     // Get predictions
     val predictionsBalancedLR = balancedLR.transform(testData)
@@ -62,7 +58,6 @@ object Trainer {
 
     println(s"Intercept: ${balancedLR.intercept}")
 
-    predictionsBalancedLR.show(20)
     Tools.saveDataFrameToCsv(predictionsBalancedLR.select($"label", $"prediction"), "predictionBLR")
     spark.stop()
   }
