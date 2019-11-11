@@ -58,7 +58,7 @@ object Tools {
       .mode ("overwrite")
       .format("com.databricks.spark.csv")
       .option("header", "true")
-      .save(s"data/$name")
+      .save(s"$name")
   }
 
   /**

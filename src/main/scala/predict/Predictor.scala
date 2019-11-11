@@ -1,5 +1,7 @@
 package predict
 
+import org.apache.spark.ml.classification.RandomForestClassificationModel
+import org.apache.spark.ml.feature.VectorAssembler
 import org.apache.spark.ml.tuning.CrossValidatorModel
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.{Column, SparkSession}
@@ -19,19 +21,19 @@ object Predictor {
     val df = data.drop("label").withColumn("id", monotonically_increasing_id())
 
 
-    val dataAssembled = Tools.retrieveDataFrameCleaned(dataPath)
-    /*
+    val dataBeforeAssembling = Tools.retrieveDataFrameCleaned(dataPath)
+
     val featuresCols = Array("appOrSite", "size", "os", "bidFloor", "type", "exchange", "media", "IAB1", "IAB2", "IAB3", "IAB4", "IAB5", "IAB6", "IAB7", "IAB8", "IAB9", "IAB10", "IAB11", "IAB12", "IAB13", "IAB14", "IAB15", "IAB16", "IAB17", "IAB18", "IAB19", "IAB20", "IAB21", "IAB22", "IAB23", "IAB24", "IAB25", "IAB26")
 
     val assembler = new VectorAssembler()
       .setInputCols(featuresCols)
       .setOutputCol("features")
 
-    val dataAssembled = assembler.transform(dataCleaned)
-    */
+    val dataAssembled = assembler.transform(dataBeforeAssembling)
+
 
     //val model = LogisticRegressionModel.load("model/randomForestModel").setPredictionCol("label").setFeaturesCol("features")
-   val model = CrossValidatorModel.load("model/randomForestModel")
+   val model = RandomForestClassificationModel.load("models/randomForestModel")
 
     val predictions = model
       .transform(dataAssembled)
@@ -41,6 +43,6 @@ object Predictor {
     val dataFrameToSave = labelColumn.join(df, $"idl" === $"id", "left_outer").drop("id").drop("idl")
     def stringify(c: Column): Column = concat(lit("["), concat_ws(",", c), lit("]"))
 
-    Tools.saveDataFrameToCsv(dataFrameToSave.withColumn("size", stringify(col("size"))), "train")
+    Tools.saveDataFrameToCsv(dataFrameToSave.withColumn("size", stringify(col("size"))), "output")
   }
 }
