@@ -28,6 +28,11 @@ object Tools {
     data
   }
 
+  /**
+   * Select the necessary columns
+   * @param dataFrame
+   * @return
+   */
   def selectData(dataFrame: DataFrame): DataFrame = {
     val columns = Seq("appOrSite", "bidFloor", "timestamp", "os", "size", "label", "type", "interests", "media", "exchange")
     dataFrame.select(columns.head, columns.tail: _*)
@@ -56,6 +61,11 @@ object Tools {
       .save(s"data/$name")
   }
 
+  /**
+   * Add a new column classWeightCol to the Dataset with the weight of each class.
+   * @param dataset
+   * @return
+   */
   def balanceDataset(dataset: DataFrame): DataFrame = {
     // Re-balancing (weighting) of records to be used in the logistic loss objective function
     val numNegatives = dataset.filter(dataset("label") === 0).count

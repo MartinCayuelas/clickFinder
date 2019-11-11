@@ -17,14 +17,17 @@ object DataCleaner {
     .getOrCreate()
   spark.sparkContext.setLogLevel("ERROR")
 
-
+  /**
+   * Cast the label to int
+   * @param dataFrame
+   * @return
+   */
   def cleanLabel(dataFrame: DataFrame): DataFrame = {
     dataFrame.withColumn("label", dataFrame("label").cast("Int"))
   }
 
   /**
    * 1 for Android, 2 for iOS, 3 for Windows, 0 for others
-   *
    * @param dataFrame
    * @return
    */
@@ -45,7 +48,6 @@ object DataCleaner {
 
   /**
    * 0 to 4 for exchange
-   *
    * @param dataFrame
    * @return
    */
@@ -60,8 +62,7 @@ object DataCleaner {
   }
 
   /**
-   * 0 to 4 for exchange
-   *
+   * 0 to 2 for media
    * @param dataFrame
    * @return
    */
@@ -75,7 +76,6 @@ object DataCleaner {
 
   /**
    * 1 for App, 2 for Site, 0 otherwise
-   *
    * @param dataFrame
    * @return
    */
@@ -89,7 +89,6 @@ object DataCleaner {
 
   /**
    * Replace null values with the average bidfloor
-   *
    * @param dataFrame
    * @return
    */
@@ -100,7 +99,6 @@ object DataCleaner {
 
   /**
    * Replace null values with the average timestamp
-   *
    * @param dataFrame
    * @return
    */
@@ -111,7 +109,6 @@ object DataCleaner {
 
   /**
    * Replace null values 5 and CLICK with 4
-   *
    * @param dataFrame
    * @return
    */
@@ -125,19 +122,12 @@ object DataCleaner {
     cleanDF.na.fill(5, Seq("type"))
   }
 
-
-  def cleanNetwork(dataFrame: DataFrame): DataFrame = {
-    val df_non_null = dataFrame.na.fill("UNKNOWN", Seq("network"))
-    df_non_null.withColumn("network", when(col("network") === "other", "UNKNOWN"))
-  }
-
   /**
    * Replace the size with the Screen Type:
    * 0 if null
    * 1 for a square screen (L == H)
    * 2 for horizontal (L > H)
    * 3 for vertical (L < H)
-   *
    * @param dataFrame
    * @return
    */
@@ -152,8 +142,6 @@ object DataCleaner {
 
   /**
    * Removes the sub-categories for the interests column.
-   * TODO - UNKNOWN ?
-   *
    * @param dataFrame
    * @return the dataFrame with the column interests cleaned
    */
@@ -167,20 +155,16 @@ object DataCleaner {
     var dfWithArray = df_non_null.withColumn("interests", split($"interests", ",").cast("array<String>"))
     //Create a new column for each interest with 0 (not interested) or 1 (interested)
     for (i <- 1 to 26) dfWithArray = dfWithArray.withColumn("IAB" + i.toString, array_contains(col("interests"), i.toString).cast("Int"))
-    //dfWithArray.printSchema()
-    //dfWithArray.show(10)
     dfWithArray
   }
 
   /**
    * Applies all the cleaning method to the dataframe in parameter
-   *
    * @param dataFrame
    * @return
    */
   def clean(dataFrame: DataFrame): DataFrame = {
     val methods: Seq[DataFrame => DataFrame] = Seq(cleanOS, cleanBidFloor, cleanAppOrSite, cleanLabel, cleanTimestamp, cleanSize, cleanType, cleanInterests, cleanExchange, cleanMedia)
-
     @tailrec
     def applyMethods(methods: Seq[DataFrame => DataFrame], res: DataFrame): DataFrame = {
       methods match {
@@ -188,26 +172,6 @@ object DataCleaner {
         case _ => applyMethods(methods.tail, methods.head(res))
       }
     }
-
     applyMethods(methods, dataFrame)
-  }
-
-
-  def main(args: Array[String]) {
-
-
-    //df.write.json("result")
-    /*
-    val df = selectData(readDataFrame())
-    val res = clean(df)
-    res.printSchema
-    res.select("os").distinct.show()
-    res.select("bidFloor").distinct.show()
-     */
-    //Limit the df and save in files
-    //saveDataFrameToCsv(limitedDf)
-    //res.select("os").distinct.show()
-    //res.select("bidFloor").distinct.show()
-    spark.stop()
   }
 }
