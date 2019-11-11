@@ -32,4 +32,4 @@ java -jar clickFinder.jar train nameFile
 ```
 
 #### Result
-The prediction results can be found in the ```data/predictions/prediction/part-00000-xxxxxx.csv``` folder
+The prediction results can be found in the ```output/part-00000-xxxxxx.csv``` folder
