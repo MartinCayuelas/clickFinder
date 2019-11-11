@@ -51,9 +51,10 @@ object Predictor {
    * @param dataPath : path of the json file to analyze
    */
   def predict1000(spark: SparkSession, dataPath: String): Unit = {
-    println("Start")
-    val now = System.nanoTime
+
     import spark.implicits._
+    println("Start*************************************")
+    val now = System.nanoTime
 
     val data = Tools.limitDataFrame(Tools.readDataFrame(dataPath), 1000)
     println("Numbers of lines : "+data.count())
@@ -82,6 +83,7 @@ object Predictor {
     val elapsedTimeInSecond = timeElapsed.asInstanceOf[Double] / 1000000000
 
     println("Time for 1000 predictions :"+elapsedTimeInSecond + " seconds")
+    println("*************************************************")
 
   }
 
