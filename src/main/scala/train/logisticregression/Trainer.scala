@@ -9,14 +9,14 @@ import utils.Tools
 
 object Trainer {
 
-  def train(spark: SparkSession, pathToFile: String) {
+  def main(args: Array[String]) {
 
-    /* val spark = SparkSession
+    val spark = SparkSession
        .builder()
        .appName("ClickFinder")
        .config("spark.master", "local")
        .getOrCreate()
- */
+
     import spark.implicits._
 
     val raw_data = Tools.retrieveDataFrameCleaned()
@@ -39,13 +39,13 @@ object Trainer {
       .setFeaturesCol("features")
       .setWeightCol("classWeightCol")
       //.setFamily("binomial")
-      .setMaxIter(100)
-      .setRegParam(0.01)
-      .setThreshold(0.54)
+      .setMaxIter(30)
+      .setRegParam(0)
+      .setThreshold(0.55)
 
     // Fit the model for Logistic Regression
     val balancedLR = lr.fit(balanced_dataset)
-    balancedLR.write.overwrite().save("models/balancedModel")
+    //balancedLR.write.overwrite().save("models/balancedModel")
 
     // Get predictions
     val predictionsBalancedLR = balancedLR.transform(testData)

@@ -17,7 +17,6 @@ object Tools {
   def retrieveDataFrameCleaned(pathToFile: String ="data-students.json"): DataFrame = {
     val df = selectData(readDataFrame(pathToFile))
     clean(df)
-
   }
 
   def readDataFrame(pathToFile: String): DataFrame = {

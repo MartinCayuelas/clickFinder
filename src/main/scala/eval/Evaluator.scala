@@ -18,7 +18,7 @@ object Evaluator {
    * @param filePath : path of the file for results saving
    */
   def retrieveMetrics(predictions: DataFrame, filePath: String): Unit = {
-    val predictionsAndLabelsN = predictions.select("prediction", "label").rdd
+    val predictionsAndLabels = predictions.select("prediction", "label").rdd
       .map(row => (row.getDouble(0),
         row.get(1).asInstanceOf[Int].toDouble))
 
@@ -29,37 +29,33 @@ object Evaluator {
     val accuracy = evaluator.evaluate(predictions)
     println(s"accuracy: ${accuracy}")
 
-    val metricsN = new MulticlassMetrics(predictionsAndLabelsN)
-    val confusionMatrixN = metricsN.confusionMatrix
-    val confusionMatrix = inverseMatrix(confusionMatrixN)
-    println(s" Confusion Matrix:\n ${confusionMatrix(0)(0)}\t${confusionMatrix(0)(1)}\n${confusionMatrix(1)(0)}\t${confusionMatrix(1)(1)}")
+    val metrics = new MulticlassMetrics(predictionsAndLabels)
+    val confusionMatrix = metrics.confusionMatrix
 
-    val recallMatrix = confusionMatrix(0)(0) / (confusionMatrix(0)(0) + confusionMatrix(1)(0))
-    val accuracyMatrix = confusionMatrix(0)(0) / (confusionMatrix(0)(0) + confusionMatrix(0)(1))
+    println(s" Confusion Matrix:\n ${confusionMatrix.toString}")
 
-    println(s"Recall: ${recallMatrix}")
-    println(s"Accuracy: ${accuracyMatrix}")
+    val recallClick = confusionMatrix.apply(1,1) / (confusionMatrix.apply(1,1) + confusionMatrix.apply(0,1))
+    val accuracyClick = confusionMatrix.apply(1,1) / (confusionMatrix.apply(1,1) + confusionMatrix.apply(1,0))
+
+    val recallNonClick = confusionMatrix.apply(0,0) / (confusionMatrix.apply(0,0) + confusionMatrix.apply(1,0))
+    val accuracyNonClick = confusionMatrix.apply(0,0) / (confusionMatrix.apply(0,0) + confusionMatrix.apply(0,1))
+
+    val fMesureClick = (2 * (accuracyClick * recallClick)) / (accuracyClick + recallClick)
+    val fMesureNonClick = (2 * (accuracyNonClick * recallNonClick)) / (accuracyNonClick + recallNonClick)
+
+    println(s"Recall (Clicks): ${recallClick}")
+    println(s"Accuracy (Clicks): ${accuracyClick}")
+    println(s"F-Mesure (Clicks): ${fMesureClick}")
+
+    println(s"Recall (Non-Clicks): ${recallNonClick}")
+    println(s"Accuracy (Non-Clicks): ${accuracyNonClick}")
+    println(s"F-Mesure (Non-Clicks): ${fMesureNonClick}")
 
     Tools.writeFile(s"accuracy: ${accuracy} \n", filePath)
-    Tools.writeFile(s" Confusion Matrix:\n ${confusionMatrix(0)(0)}\t${confusionMatrix(0)(1)}\n${confusionMatrix(1)(0)}\t${confusionMatrix(1)(1)}\n", filePath)
-    Tools.writeFile(s"Recall: ${recallMatrix}\n", filePath)
-    Tools.writeFile(s"Accuracy: ${accuracyMatrix}\n", filePath)
-
+    Tools.writeFile(s"Confusion Matrix:\n ${confusionMatrix.toString}", filePath)
+    Tools.writeFile(s"Recall click: ${recallClick}\n", filePath)
+    Tools.writeFile(s"Accuracy click: ${accuracyClick}\n", filePath)
+    Tools.writeFile(s"Recall non click: ${recallNonClick}\n", filePath)
+    Tools.writeFile(s"Accuracy non click: ${accuracyNonClick}\n", filePath)
   }
-
-  def inverseMatrix(matrix: Matrix): Array[Array[Double]] = {
-    val trueNegative = matrix.apply(0,0)
-    val falsePositive = matrix.apply(0,1)
-    val falseNegative = matrix.apply(1,0)
-    val truePositive = matrix.apply(1,1)
-    val result = Array.ofDim[Double](2,2)
-
-    result(0)(0) = truePositive
-    result(1)(1) = trueNegative
-    result(1)(0) = falsePositive
-    result(0)(1) = falseNegative
-    result
-  }
-
-
 }

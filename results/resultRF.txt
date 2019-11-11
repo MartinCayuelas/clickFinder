@@ -1392,21 +1392,4 @@ Accuracy: 0.37598425196850394
 
 areaUnderROC: 0.687992125984252
 
---------------------------------------------------------------------
-PARAMS:
- impurity: entropy 
- maxDepth 10 
- numTrees 52 
- maxBins 112
-accuracy: 0.9838109602815485 
-
- Confusion Matrix:
- 186.0	322.0
-0.0	19382.0
-
-Recall: 1.0
-
-Accuracy: 0.3661417322834646
-
-areaUnderROC: 0.6830708661417323
 
