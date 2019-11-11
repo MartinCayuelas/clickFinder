@@ -846,29 +846,550 @@ Recall: 1.0
 
 Accuracy: 0.2853881278538813
 
+--------------------------------------------------------------------
+PARAMS:
+ impurity: entropy 
+ maxDepth 8 
+ numTrees 48 
+ maxBins 108
+accuracy: 0.9833584715937657 
+
+ Confusion Matrix:
+ 177.0	331.0
+0.0	19382.0
+
+Recall: 1.0
+
+Accuracy: 0.3484251968503937
+
+areaUnderROC: 0.6742125984251969
+
+--------------------------------------------------------------------
+PARAMS:
+ impurity: entropy 
+ maxDepth 8 
+ numTrees 48 
+ maxBins 110
+accuracy: 0.9748617395676219 
+
+ Confusion Matrix:
+ 8.0	500.0
+0.0	19382.0
+
+Recall: 1.0
+
+Accuracy: 0.015748031496062992
+
+areaUnderROC: 0.5078740157480315
+
+--------------------------------------------------------------------
+PARAMS:
+ impurity: entropy 
+ maxDepth 8 
+ numTrees 48 
+ maxBins 112
+accuracy: 0.9748617395676219 
+
+ Confusion Matrix:
+ 8.0	500.0
+0.0	19382.0
+
+Recall: 1.0
+
+Accuracy: 0.015748031496062992
+
+areaUnderROC: 0.5078740157480315
+
+--------------------------------------------------------------------
+PARAMS:
+ impurity: entropy 
+ maxDepth 8 
+ numTrees 50 
+ maxBins 108
+accuracy: 0.9762192056309703 
+
+ Confusion Matrix:
+ 35.0	473.0
+0.0	19382.0
+
+Recall: 1.0
+
+Accuracy: 0.0688976377952756
+
+areaUnderROC: 0.5344488188976378
+
+--------------------------------------------------------------------
+PARAMS:
+ impurity: entropy 
+ maxDepth 8 
+ numTrees 50 
+ maxBins 110
+--------------------------------------------------------------------
+PARAMS:
+ impurity: entropy 
+ maxDepth 8 
+ numTrees 48 
+ maxBins 108
+accuracy: 0.9833584715937657 
+
+ Confusion Matrix:
+ 177.0	331.0
+0.0	19382.0
+
+Recall: 1.0
+
+Accuracy: 0.3484251968503937
+
+areaUnderROC: 0.6742125984251969
+
+--------------------------------------------------------------------
+PARAMS:
+ impurity: entropy 
+ maxDepth 8 
+ numTrees 48 
+ maxBins 110
+accuracy: 0.9748617395676219 
+
+ Confusion Matrix:
+ 8.0	500.0
+0.0	19382.0
+
+Recall: 1.0
+
+Accuracy: 0.015748031496062992
+
+areaUnderROC: 0.5078740157480315
+
+--------------------------------------------------------------------
+PARAMS:
+ impurity: entropy 
+ maxDepth 8 
+ numTrees 48 
+ maxBins 112
+accuracy: 0.9748617395676219 
+
+ Confusion Matrix:
+ 8.0	500.0
+0.0	19382.0
+
+Recall: 1.0
+
+Accuracy: 0.015748031496062992
+
+areaUnderROC: 0.5078740157480315
+
+--------------------------------------------------------------------
+PARAMS:
+ impurity: entropy 
+ maxDepth 8 
+ numTrees 50 
+ maxBins 108
+accuracy: 0.9762192056309703 
+
+ Confusion Matrix:
+ 35.0	473.0
+0.0	19382.0
+
+Recall: 1.0
+
+Accuracy: 0.0688976377952756
+
+areaUnderROC: 0.5344488188976378
+
+--------------------------------------------------------------------
+PARAMS:
+ impurity: entropy 
+ maxDepth 8 
+ numTrees 50 
+ maxBins 110
+accuracy: 0.9831070889894419 
+
+ Confusion Matrix:
+ 172.0	336.0
+0.0	19382.0
+
+Recall: 1.0
+
+Accuracy: 0.33858267716535434
+
+areaUnderROC: 0.6692913385826772
+
+--------------------------------------------------------------------
+PARAMS:
+ impurity: entropy 
+ maxDepth 8 
+ numTrees 50 
+ maxBins 112
+accuracy: 0.9770236299648064 
+
+ Confusion Matrix:
+ 51.0	457.0
+0.0	19382.0
+
+Recall: 1.0
+
+Accuracy: 0.10039370078740158
+
+areaUnderROC: 0.5501968503937008
+
+--------------------------------------------------------------------
+PARAMS:
+ impurity: entropy 
+ maxDepth 8 
+ numTrees 52 
+ maxBins 108
+accuracy: 0.9755153343388637 
+
+ Confusion Matrix:
+ 21.0	487.0
+0.0	19382.0
+
+Recall: 1.0
+
+Accuracy: 0.04133858267716536
+
+areaUnderROC: 0.5206692913385826
+
+--------------------------------------------------------------------
+PARAMS:
+ impurity: entropy 
+ maxDepth 8 
+ numTrees 52 
+ maxBins 110
+accuracy: 0.982051282051282 
+
+ Confusion Matrix:
+ 151.0	357.0
+0.0	19382.0
+
+Recall: 1.0
+
+Accuracy: 0.297244094488189
+
+areaUnderROC: 0.6486220472440944
+
+--------------------------------------------------------------------
+PARAMS:
+ impurity: entropy 
+ maxDepth 8 
+ numTrees 52 
+ maxBins 112
+accuracy: 0.9745600804424334 
+
+ Confusion Matrix:
+ 2.0	506.0
+0.0	19382.0
+
+Recall: 1.0
+
+Accuracy: 0.003937007874015748
+
+areaUnderROC: 0.5019685039370079
+
+--------------------------------------------------------------------
+PARAMS:
+ impurity: entropy 
+ maxDepth 9 
+ numTrees 48 
+ maxBins 108
+accuracy: 0.9850175967823027 
+
+ Confusion Matrix:
+ 210.0	298.0
+0.0	19382.0
+
+Recall: 1.0
+
+Accuracy: 0.41338582677165353
+
+areaUnderROC: 0.7066929133858267
+
+--------------------------------------------------------------------
+PARAMS:
+ impurity: entropy 
+ maxDepth 9 
+ numTrees 48 
+ maxBins 110
+accuracy: 0.9789844142785319 
+
+ Confusion Matrix:
+ 90.0	418.0
+0.0	19382.0
+
+Recall: 1.0
+
+Accuracy: 0.17716535433070865
+
+areaUnderROC: 0.5885826771653543
+
+--------------------------------------------------------------------
+PARAMS:
+ impurity: entropy 
+ maxDepth 9 
+ numTrees 48 
+ maxBins 112
+accuracy: 0.9838612368024132 
+
+ Confusion Matrix:
+ 187.0	321.0
+0.0	19382.0
+
+Recall: 1.0
+
+Accuracy: 0.36811023622047245
+
+areaUnderROC: 0.6840551181102362
+
+--------------------------------------------------------------------
+PARAMS:
+ impurity: entropy 
+ maxDepth 9 
+ numTrees 50 
+ maxBins 108
+accuracy: 0.9774258421317245 
+
+ Confusion Matrix:
+ 59.0	449.0
+0.0	19382.0
+
+Recall: 1.0
+
+Accuracy: 0.11614173228346457
+
+areaUnderROC: 0.5580708661417323
+
+--------------------------------------------------------------------
+PARAMS:
+ impurity: entropy 
+ maxDepth 9 
+ numTrees 50 
+ maxBins 110
+accuracy: 0.985168426344897 
+
+ Confusion Matrix:
+ 213.0	295.0
+0.0	19382.0
+
+Recall: 1.0
+
+Accuracy: 0.41929133858267714
+
+areaUnderROC: 0.7096456692913385
+
+--------------------------------------------------------------------
+PARAMS:
+ impurity: entropy 
+ maxDepth 9 
+ numTrees 50 
+ maxBins 112
+accuracy: 0.9842634489693313 
+
+ Confusion Matrix:
+ 195.0	313.0
+0.0	19382.0
+
+Recall: 1.0
+
+Accuracy: 0.3838582677165354
+
+areaUnderROC: 0.6919291338582677
+
+--------------------------------------------------------------------
+PARAMS:
+ impurity: entropy 
+ maxDepth 9 
+ numTrees 52 
+ maxBins 108
+accuracy: 0.9836098541980894 
+
+ Confusion Matrix:
+ 182.0	326.0
+0.0	19382.0
+
+Recall: 1.0
+
+Accuracy: 0.35826771653543305
+
+areaUnderROC: 0.6791338582677166
+
+--------------------------------------------------------------------
+PARAMS:
+ impurity: entropy 
+ maxDepth 9 
+ numTrees 52 
+ maxBins 110
+accuracy: 0.9838109602815485 
+
+ Confusion Matrix:
+ 186.0	322.0
+0.0	19382.0
+
+Recall: 1.0
+
+Accuracy: 0.3661417322834646
+
+areaUnderROC: 0.6830708661417323
+
+--------------------------------------------------------------------
+PARAMS:
+ impurity: entropy 
+ maxDepth 9 
+ numTrees 52 
+ maxBins 112
+accuracy: 0.9789844142785319 
+
+ Confusion Matrix:
+ 90.0	418.0
+0.0	19382.0
+
+Recall: 1.0
+
+Accuracy: 0.17716535433070865
+
+areaUnderROC: 0.5885826771653543
+
+--------------------------------------------------------------------
+PARAMS:
+ impurity: entropy 
+ maxDepth 10 
+ numTrees 48 
+ maxBins 108
+accuracy: 0.9853192559074913 
+
+ Confusion Matrix:
+ 216.0	292.0
+0.0	19382.0
+
+Recall: 1.0
+
+Accuracy: 0.4251968503937008
+
+areaUnderROC: 0.7125984251968505
+
+--------------------------------------------------------------------
+PARAMS:
+ impurity: entropy 
+ maxDepth 10 
+ numTrees 48 
+ maxBins 110
+accuracy: 0.983911513323278 
+
+ Confusion Matrix:
+ 188.0	320.0
+0.0	19382.0
+
+Recall: 1.0
+
+Accuracy: 0.3700787401574803
+
+areaUnderROC: 0.6850393700787402
+
+--------------------------------------------------------------------
+PARAMS:
+ impurity: entropy 
+ maxDepth 10 
+ numTrees 48 
+ maxBins 112
+accuracy: 0.9842634489693313 
+
+ Confusion Matrix:
+ 195.0	313.0
+0.0	19382.0
+
+Recall: 1.0
+
+Accuracy: 0.3838582677165354
+
+areaUnderROC: 0.6919291338582677
+
+--------------------------------------------------------------------
+PARAMS:
+ impurity: entropy 
+ maxDepth 10 
+ numTrees 50 
+ maxBins 108
+accuracy: 0.9785319255907491 
+
+ Confusion Matrix:
+ 81.0	427.0
+0.0	19382.0
+
+Recall: 1.0
+
+Accuracy: 0.1594488188976378
+
+areaUnderROC: 0.5797244094488189
+
+--------------------------------------------------------------------
+PARAMS:
+ impurity: entropy 
+ maxDepth 10 
+ numTrees 50 
+ maxBins 110
 accuracy: 0.9854198089492208 
 
-Confusion Matrix:
- 19382.0  0.0    
-290.0    218.0  
-Recall click: 0.9852582350549004
+ Confusion Matrix:
+ 218.0	290.0
+0.0	19382.0
 
-Accuracy click: 1.0
+Recall: 1.0
 
-Recall non click: 1.0
+Accuracy: 0.42913385826771655
 
-Accuracy non click: 0.42913385826771655
+areaUnderROC: 0.7145669291338583
 
-accuracy: 0.9853124059773343 
+--------------------------------------------------------------------
+PARAMS:
+ impurity: entropy 
+ maxDepth 10 
+ numTrees 50 
+ maxBins 112
+accuracy: 0.984967320261438 
 
-Confusion Matrix:
- 194164.0  0.0     
-2929.0    2327.0  
-Recall click: 1.0
+ Confusion Matrix:
+ 209.0	299.0
+0.0	19382.0
 
-Accuracy click: 0.4427321156773212
+Recall: 1.0
 
-Recall non click: 0.9851389952966366
+Accuracy: 0.41141732283464566
 
-Accuracy non click: 1.0
+areaUnderROC: 0.7057086614173228
+
+--------------------------------------------------------------------
+PARAMS:
+ impurity: entropy 
+ maxDepth 10 
+ numTrees 52 
+ maxBins 108
+accuracy: 0.9840623428858722 
+
+ Confusion Matrix:
+ 191.0	317.0
+0.0	19382.0
+
+Recall: 1.0
+
+Accuracy: 0.37598425196850394
+
+areaUnderROC: 0.687992125984252
+
+--------------------------------------------------------------------
+PARAMS:
+ impurity: entropy 
+ maxDepth 10 
+ numTrees 52 
+ maxBins 110
+accuracy: 0.9840623428858722 
+
+ Confusion Matrix:
+ 191.0	317.0
+0.0	19382.0
+
+Recall: 1.0
+
+Accuracy: 0.37598425196850394
+
+areaUnderROC: 0.687992125984252
+
 

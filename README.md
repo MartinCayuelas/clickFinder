@@ -18,13 +18,18 @@ mv ./target/scala-2.12/clickFinder-assembly-0.1.jar clickFinder.jar
 
 To predict 
 ```shell script
-java -jar clickFinder.jar predict nameFIle
+java -jar clickFinder.jar predict nameFile
+```
+
+To predict 1000 rows
+```shell script
+java -jar clickFinder.jar predict1000 nameFile
 ```
 
 #### Train
 To train
 ```shell script
-java -jar clickFinder.jar train nameFIle
+java -jar clickFinder.jar train nameFile
 ```
 
 #### Result

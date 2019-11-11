@@ -27,10 +27,10 @@ object CrossValidator {
     val balanced_dataset = Tools.balanceDataset(trainingData)
 
     //Parameters to change
-    val impurityTab = Array("gini")
-    val maxDepthTab = Array(7,8,9)
-    val numTreeTab = Array(40,45,50)
-    val maxBinsTab = Array(90,100,110)
+    val impurityTab = Array("entropy")
+    val maxDepthTab = Array(8,9,10)
+    val numTreeTab = Array(48,50,52)
+    val maxBinsTab = Array(108,110,112)
 
     impurityTab.foreach(impurity =>
       maxDepthTab.foreach(maxDepth =>
