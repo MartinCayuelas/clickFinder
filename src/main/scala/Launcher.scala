@@ -25,6 +25,7 @@ object Launcher extends App {
           case _ => println("See Usage")
         }
       }
+        print (args)
       case "predict" =>
         args match {
           case Array(c, filepath, name) => Predictor.predict(spark,filepath, name)

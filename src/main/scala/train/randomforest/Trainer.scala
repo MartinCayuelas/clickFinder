@@ -54,6 +54,8 @@ object Trainer {
     predictionsBalancedRF.show(50)
     Evaluator.retrieveMetrics(predictionsBalancedRF, "results/resultRF.txt")
 
+    println(s"result can be found at: models/${name}")
+
     spark.stop()
   }
 }

@@ -90,6 +90,7 @@ object Tools {
 
   def stringify(c: Column): Column = concat(lit("["), concat_ws(",", c), lit("]"))
 
+
   def writeFile(s: String, filePath: String): Unit = {
     val file = new File(filePath)
     val bw = new BufferedWriter(new FileWriter(file, true))

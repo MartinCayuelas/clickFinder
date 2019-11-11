@@ -39,9 +39,9 @@ object Predictor {
 
     val labelColumn = predictions.select("prediction").withColumn("idl", monotonically_increasing_id())
     val dataFrameToSave = labelColumn.join(df, $"idl" === $"id", "left_outer").drop("id").drop("idl")
-    def stringify(c: Column): Column = concat(lit("["), concat_ws(",", c), lit("]"))
 
-    Tools.saveDataFrameToCsv(dataFrameToSave.withColumn("size", stringify(col("size"))), s"output/${name}")
+    Tools.saveDataFrameToCsv(dataFrameToSave.withColumn("size", Tools.stringify(col("size"))), s"output/${dataPath}")
+    println(s"result can be found at: output/${dataPath}")
   }
 
   /**

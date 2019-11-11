@@ -5,6 +5,7 @@ version := "0.1"
 scalaVersion := "2.12.8"
 assemblyOutputPath in assembly := file("clickFinder.jar")
 
+
 mainClass in Compile := Some("Launcher")
 libraryDependencies ++= Seq(
   "org.apache.spark" %% "spark-streaming" % "2.4.3" ,
